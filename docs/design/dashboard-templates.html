@@ -197,6 +197,44 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
 .ob i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
 .ob-open { background: var(--s1); }
 .ob-focus { background: var(--c1); }
+/* plans */
+.switcher { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 4px 0 0; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { font: inherit; font-size: 13px; color: var(--ink2); background: transparent; border: 0; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button.on { background: var(--accent-wash); color: var(--ink); font-weight: 600; }
+.seg i, .plan-title i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.inline-select { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1px 4px; max-width: 60%; }
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 900px) { .plans { grid-template-columns: minmax(0, 1fr); } }
+.plan-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--page); min-width: 0; }
+.plan-card.new { border-style: dashed; border-color: var(--axis); }
+.plan-title { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+ul.new-opts { list-style: none; margin: 8px 0 0; padding: 0; font-size: 13px; color: var(--ink2); }
+ul.new-opts li { padding: 7px 0; border-top: 1px solid var(--grid); }
+ul.new-opts li:first-child { border-top: 0; }
+ul.new-opts b { color: var(--ink); font-weight: 600; }
+ul.new-opts .badge { margin-left: 4px; }
+.form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 12px; align-items: end; margin-bottom: 12px; }
+@media (max-width: 760px) { .form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.form label:first-child { grid-column: span 2; }
+.form input[type=text] { font: inherit; font-size: 13px; color: var(--ink); background: var(--page); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; min-width: 0; }
+.form .chk-inline { flex-direction: row; align-items: center; gap: 8px; font-size: 13px; color: var(--ink2); padding-bottom: 7px; }
+.form .chk-inline input { accent-color: var(--c1); }
+.chips-field { grid-column: span 2; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); padding-bottom: 4px; }
+.chips-field > span:first-child { width: 100%; }
+@media (max-width: 760px) { .form label:first-child, .chips-field { grid-column: span 2; } }
+table.topics td code { margin-right: 2px; white-space: nowrap; }
+table.topics td:last-child { white-space: normal; }
+.pick { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid var(--grid); font-size: 13px; }
+.flyout > b + .pick { margin-top: 8px; }
+.radio { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--axis); flex: none; margin-top: 2px; position: relative; }
+.pick.on .radio { border-color: var(--c1); }
+.pick.on .radio::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--c1); }
+.suggest { margin-top: 12px; border: 1px solid var(--border); border-left: 3px solid var(--c3); border-radius: 0; padding: 10px 12px; font-size: 13px; color: var(--ink2); background: var(--page); }
+pre.yaml { margin: 0; background: var(--page); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+pre.yaml code { background: none; padding: 0; font-size: 12px; line-height: 1.55; color: var(--ink); }
 /* toast mock */
 .toast { border: 1px solid var(--border); border-radius: 10px; background: var(--page); padding: 12px 14px; box-shadow: 0 6px 22px rgba(0,0,0,.10); }
 .toast + .toast { margin-top: 12px; }
@@ -211,7 +249,7 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
   <header class="top">
     <div>
       <h1>PrepPulse — design templates</h1>
-      <p class="lede">Two parts share one capture engine and database: <b>A</b> tracks focus live during the current study session (taskbar, tray, alerts), and <b>B</b> shows overall progress against the plan. Everything runs on <b>sample data</b> for 26 Oct – 8 Nov 2026 with a mock interview date of 18 Dec. Hover any chart for details. Cards marked <b>MVP</b> are the suggested first cut.</p>
+      <p class="lede">Two parts share one capture engine and database: <b>A</b> tracks focus live during the current study session (taskbar, tray, alerts), and <b>B</b> shows overall progress against your plans. <b>C</b> is where you feed in those study plans — you can have several. Everything runs on <b>sample data</b> for 26 Oct – 8 Nov 2026 with a mock interview date of 18 Dec. Hover any chart for details. Cards marked <b>MVP</b> are the suggested first cut.</p>
     </div>
     <button class="theme" id="themeBtn" type="button">Toggle dark mode</button>
   </header>
@@ -285,10 +323,10 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
 
     <section class="card span2">
       <div class="card-head"><h3>Focus list &amp; distraction list</h3><span class="badge mvp">MVP</span></div>
-      <p class="meta"><b>You decide</b> where focus should be and what counts as a distraction — apps by program name, websites by domain. Anything on neither list is "other". <b>Drives:</b> prep time, alerts and every chart.</p>
+      <p class="meta"><b>You decide</b> where focus should be and what counts as a distraction — apps by program name, websites by domain. Each study plan has its <b>own focus list</b> (built from its topics, see C); the <b>distraction list is shared</b>. Anything on neither list is "other". <b>Drives:</b> prep time, alerts and every chart.</p>
       <div class="lists">
         <div class="list-col">
-          <div class="list-head"><span class="ico" style="color:var(--good)">●</span><b>Focus here</b><span class="cnt">10</span></div>
+          <div class="list-head"><span class="ico" style="color:var(--good)">●</span><b>Focus here</b>&nbsp;for <select class="inline-select" aria-label="Plan"><option>Interview prep — AI engineer</option><option>Learning AI</option></select><span class="cnt">10</span></div>
           <ul class="entries">
             <li><span class="kind">App</span><code>Code.exe</code><span class="chip"><i style="background:var(--c1)"></i>Coding</span></li>
             <li><span class="kind">App</span><code>devenv.exe</code><span class="chip"><i style="background:var(--c1)"></i>Coding</span></li>
@@ -303,7 +341,7 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
           </ul>
         </div>
         <div class="list-col">
-          <div class="list-head"><span class="ico" style="color:var(--crit)">▲</span><b>Distractions</b><span class="cnt">6</span></div>
+          <div class="list-head"><span class="ico" style="color:var(--crit)">▲</span><b>Distractions</b>&nbsp;· all plans<span class="cnt">6</span></div>
           <ul class="entries">
             <li><span class="kind">App</span><code>WhatsApp.exe</code></li>
             <li><span class="kind">App</span><code>Discord.exe</code></li>
@@ -451,6 +489,15 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
       <p>The dashboard: how today and the whole prep window compare with the plan, and how focus quality is trending. Opened from the tray when you want to review.</p>
     </div>
   </div>
+  <div class="switcher">
+    <span class="hint" style="margin:0">Showing</span>
+    <div class="seg" role="group" aria-label="Plan shown on the dashboard">
+      <button type="button">All plans</button>
+      <button type="button" class="on"><i style="background:var(--c1)"></i>Interview prep — AI engineer</button>
+      <button type="button"><i style="background:var(--c3)"></i>Learning AI</button>
+    </div>
+    <span class="hint" style="margin:0">Every chart below follows this choice. "All plans" adds targets together; open-ended plans show weekly progress instead of a burn-up.</span>
+  </div>
   <h2>Today at a glance</h2>
   <div class="tiles" id="tiles"></div>
 
@@ -511,6 +558,129 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
     </section>
   </div>
 
+  <div class="part">
+    <span class="part-tag">C</span>
+    <div>
+      <h2 class="pt">Study plans — where "expected" comes from</h2>
+      <p>A plan says how much time you expect to study, on what, and until when. Run several side by side — e.g. interview prep with a hard end date, and open-ended learning with a weekly target. Each plan brings its own targets, topics and focus list.</p>
+    </div>
+  </div>
+  <div class="grid">
+    <section class="card span2">
+      <div class="card-head"><h3>Your plans</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> what am I studying for, and how is each plan going? Opened from the tray menu (Plans…) or the dashboard.</p>
+      <div class="plans">
+        <div class="plan-card">
+          <div class="plan-title"><i style="background:var(--c1)"></i>Interview prep — AI engineer</div>
+          <p class="hint" style="margin:2px 0 8px">26 Oct → 18 Dec · 40 days left · 2h weekdays, 4h weekends · 7 topics</p>
+          <div class="row"><span>Done vs full plan</span><b>32.1h / 136h</b></div>
+          <div class="meter"><i style="width:24%"></i></div>
+          <p class="hint"><span class="delta-down">▼ 3.9h behind</span> · 89% of planned pace</p>
+          <p class="hint" style="margin-top:2px">This week: graphs &amp; trees, system design, LLM apps</p>
+          <div class="btns"><button class="btn tiny" type="button">Edit</button><button class="btn tiny" type="button">Export</button><button class="btn tiny" type="button">Pause</button></div>
+        </div>
+        <div class="plan-card">
+          <div class="plan-title"><i style="background:var(--c3)"></i>Learning AI</div>
+          <p class="hint" style="margin:2px 0 8px">Since 1 Oct · no end date · 7h a week · 4 topics</p>
+          <div class="row"><span>This week</span><b>4h 30m / 7h</b></div>
+          <div class="meter"><i style="width:64%;background:var(--c3)"></i></div>
+          <p class="hint">2h 30m to go by Sunday · 18.5h in total</p>
+          <p class="hint" style="margin-top:2px">Most time: transformers from scratch</p>
+          <div class="btns"><button class="btn tiny" type="button">Edit</button><button class="btn tiny" type="button">Export</button><button class="btn tiny" type="button">Pause</button></div>
+        </div>
+        <div class="plan-card new">
+          <div class="plan-title">+ New plan</div>
+          <ul class="new-opts">
+            <li><b>Start from scratch</b> — fill in the editor <span class="badge mvp">MVP</span></li>
+            <li><b>Import a plan file</b> — .yaml or .json <span class="badge mvp">MVP</span></li>
+            <li><b>From Loop Prep</b> — its "Export to PrepPulse" button <span class="badge">Later</span></li>
+            <li><b>Paste any plan text</b> — a local Ollama model drafts it; you review <span class="badge">Later</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card span2">
+      <div class="card-head"><h3>Plan editor</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Fill in:</b> dates, how much time you expect per day or per week, and topics. Each topic lists the apps and sites that count as studying it — together they form this plan's focus list.</p>
+      <div class="form">
+        <label>Name<input type="text" value="Interview prep — AI engineer"></label>
+        <label>Start<input type="text" value="26 Oct 2026"></label>
+        <label>End (interview day)<input type="text" value="18 Dec 2026"></label>
+        <label class="chk-inline"><input type="checkbox">No end date</label>
+        <label>Weekdays<input type="text" value="2h"></label>
+        <label>Weekends<input type="text" value="4h"></label>
+        <label>…or per week<input type="text" placeholder="e.g. 10h"></label>
+        <div class="chips-field"><span>Days off &amp; exceptions</span><span class="chip">29 Nov · off</span><span class="chip">13 Dec · 6h</span><button class="btn tiny" type="button">+ Add</button></div>
+      </div>
+      <div class="scroll"><table class="topics">
+        <thead><tr><th>Topic</th><th style="text-align:left">Category</th><th>Hours</th><th>Weeks</th><th style="text-align:left">Counts when in focus</th></tr></thead>
+        <tbody>
+          <tr><td>Arrays, strings &amp; hashing</td><td style="text-align:left"><span class="chip"><i style="background:var(--c1)"></i>Coding</span></td><td>18</td><td>1–3</td><td style="text-align:left"><code>leetcode.com</code> <code>neetcode.io</code> <code>Code.exe</code></td></tr>
+          <tr><td>Graphs &amp; trees</td><td style="text-align:left"><span class="chip"><i style="background:var(--c1)"></i>Coding</span></td><td>18</td><td>2–5</td><td style="text-align:left"><code>leetcode.com</code> <code>neetcode.io</code> <code>Code.exe</code></td></tr>
+          <tr><td>Dynamic programming</td><td style="text-align:left"><span class="chip"><i style="background:var(--c1)"></i>Coding</span></td><td>18</td><td>4–7</td><td style="text-align:left"><code>leetcode.com</code> <code>neetcode.io</code> <code>Code.exe</code></td></tr>
+          <tr><td>System design fundamentals</td><td style="text-align:left"><span class="chip"><i style="background:var(--c2)"></i>System design</span></td><td>24</td><td>1–8</td><td style="text-align:left"><code>bytebytego.com</code> <code>excalidraw.com</code> <code>youtube.com | system design</code></td></tr>
+          <tr><td>LLM apps — RAG, evals, serving</td><td style="text-align:left"><span class="chip"><i style="background:var(--c3)"></i>AI / ML</span></td><td>26</td><td>1–8</td><td style="text-align:left"><code>arxiv.org</code> <code>Obsidian.exe</code> <code>youtube.com | LLM</code></td></tr>
+          <tr><td>Behavioral (STAR)</td><td style="text-align:left"><span class="chip"><i style="background:var(--c4)"></i>Mock</span></td><td>12</td><td>5–8</td><td style="text-align:left"><code>Obsidian.exe | STAR</code></td></tr>
+          <tr><td>Mock interviews</td><td style="text-align:left"><span class="chip"><i style="background:var(--c4)"></i>Mock</span></td><td>20</td><td>4–8</td><td style="text-align:left"><code>localhost:3000</code></td></tr>
+        </tbody>
+      </table></div>
+      <p class="hint" style="margin-top:8px">Optional week-by-week checklist: Week 1 — 3 items (2 done) · Week 2 — 2 items · Week 3 — 2 items · Week 4 — 1 item</p>
+      <div class="btns"><button class="btn primary" type="button">Save</button><button class="btn" type="button">Export as YAML</button><button class="btn" type="button">Cancel</button></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Which plan gets the time</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Rule:</b> you pick the plan when you start a session; all focus time goes to it until you switch. <b>Built from:</b> session start, plan switches.</p>
+      <div class="flyout" aria-label="Start session mockup">
+        <b>Start session for</b>
+        <div class="pick on"><span class="radio"></span><span><b>Interview prep — AI engineer</b><br><span class="hint" style="margin:0">Today 1h 10m / 2h</span></span></div>
+        <div class="pick"><span class="radio"></span><span><b>Learning AI</b><br><span class="hint" style="margin:0">This week 4h 30m / 7h</span></span></div>
+        <div class="btns"><button class="btn primary" type="button">Start</button></div>
+        <p class="hint">Ctrl+Alt+P starts the last-used plan.</p>
+      </div>
+      <div class="suggest">You've been on <code>huggingface.co</code> for 3 min — that's in <b>Learning AI</b>. <span class="btns" style="margin:6px 0 0"><button class="btn tiny primary" type="button">Switch plan</button><button class="btn tiny" type="button">Not now</button></span></div>
+      <ul class="plain">
+        <li>Switch plans mid-session from the flyout; time after the switch counts to the new plan.</li>
+        <li>The active plan's focus list decides what counts as focus. <code>Code.exe</code> can be in both plans — no conflict.</li>
+        <li>Within a plan, the topic comes from the matching focus entry. If an entry is in several topics (LeetCode), the topic scheduled for this week wins.</li>
+        <li>The taskbar bar shows today against the active plan's target; the flyout lists every plan.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Plan file (YAML)</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>For editing in VS Code or keeping in git.</b> Import and export from the app, or drop files in <code>Documents\PrepPulse\plans</code> and PrepPulse reloads them on save. Full examples: <code>docs/examples/plans</code>.</p>
+<pre class="yaml"><code>name: Interview prep — AI engineer
+colour: blue
+start: 2026-10-26
+end: 2026-12-18          # interview day
+
+targets:
+  weekdays: 2h
+  weekends: 4h
+  days_off: [2026-11-29]
+
+topics:
+  - name: Graphs &amp; trees
+    category: coding
+    hours: 18
+    weeks: 2-5
+    focus: [leetcode.com, Code.exe]
+
+  - name: System design fundamentals
+    category: design
+    hours: 24
+    focus: [bytebytego.com,
+            "youtube.com | system design"]
+
+weeks:                   # optional checklist
+  1:
+    - Two pointers — 6 problems
+    - Read DDIA chapter 1</code></pre>
+    </section>
+  </div>
+
   <h2>Metrics behind these charts</h2>
   <section class="card">
     <div class="scroll"><table>
@@ -529,7 +699,8 @@ ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; p
         <tr><td>Time to refocus</td><td style="text-align:left">alert → next input in a prep-category app</td><td style="text-align:left">Alerts table</td></tr>
         <tr><td>Background distractions</td><td style="text-align:left">distraction-list apps open but not in focus during a session, and for how long</td><td style="text-align:left">Apps open during the session</td></tr>
         <tr><td>Session end reason</td><td style="text-align:left">stop · sleep/hibernate · restart/shutdown · locked too long · unexpected (crash or power loss)</td><td style="text-align:left">Session table</td></tr>
-        <tr><td>Topic hours</td><td style="text-align:left">active prep tagged per topic vs topic plan</td><td style="text-align:left">Topic coverage</td></tr>
+        <tr><td>Topic hours</td><td style="text-align:left">active prep per topic (from the focus entry, or the topic scheduled this week) vs the topic's planned hours</td><td style="text-align:left">Topic coverage, plan editor</td></tr>
+        <tr><td>Weekly progress</td><td style="text-align:left">open-ended plans: this week's time vs the weekly target</td><td style="text-align:left">Your plans, dashboard</td></tr>
       </tbody>
     </table></div>
   </section>

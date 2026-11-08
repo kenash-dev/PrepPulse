@@ -6,7 +6,7 @@ A Windows background tracker for interview prep. Start a session, and PrepPulse 
 
 ## What it will do
 
-Two parts sharing one capture engine and database:
+Three parts sharing one capture engine and database:
 
 **A. Current session — live focus tracking**
 - **Sessions** with a start and stop time (tray, taskbar or hotkey). Locking pauses a session; sleep, restart or shutdown ends it.
@@ -16,13 +16,18 @@ Two parts sharing one capture engine and database:
 - **Idle detection and alerts**: gaps of 2+ minutes with no input are recorded. When focus is lost — no input for 5 minutes, a distraction for 2, or an unlisted app for 5 (all configurable) — the tray icon and taskbar button flash, a beep plays, and a toast offers Back to it / Break / End session — each can be switched off.
 
 **B. Overall progress**
-- **Dashboard**: daily progress vs target, a burn-up to interview day, focus ratio and more.
+- **Dashboard**: daily progress vs target, a burn-up to interview day, focus ratio and more — per plan or for all plans together.
+
+**C. Study plans**
+- Run several plans side by side, e.g. *Interview prep* with an end date and *Learning AI* with a weekly target. Each plan has its own daily or weekly targets, topics with planned hours, and the apps and websites that count as studying it.
+- Feed a plan as a YAML file (see [`docs/examples/plans`](docs/examples/plans)) or, later, through the in-app editor, an export from Loop Prep, or by pasting plan text for a local model to structure.
 
 **Local only**: data lives in a SQLite file on your machine. No keystroke contents are ever recorded.
 
 ## Design
 
 - [`docs/brainstorm.md`](docs/brainstorm.md) — architecture options, what to capture and how, metrics, data model, privacy, roadmap, open questions.
+- [`docs/examples/plans`](docs/examples/plans) — example study plans: interview prep with an end date, and open-ended AI learning.
 - [`docs/design/dashboard-templates.html`](docs/design/dashboard-templates.html) — taskbar, tray and alert mockups plus candidate charts on sample data. Download and open it in a browser (hover for details, light/dark toggle).
 
 ## Planned stack

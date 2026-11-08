@@ -1,0 +1,30 @@
+# PrepPulse study plan — an open-ended one.
+# No end date, so progress is tracked against a weekly target instead of a finish line.
+
+name: Learning AI
+colour: teal
+start: 2026-10-01
+
+targets:
+  weekly: 7h                   # spread however you like across the week
+
+topics:
+  - name: Transformers from scratch
+    category: ai
+    hours: 15
+    focus: ["youtube.com | Karpathy", "github.com | nanoGPT", Code.exe]
+
+  - name: Fine-tuning and LoRA
+    category: ai
+    hours: 10
+    focus: [huggingface.co, colab.research.google.com]
+
+  - name: Local models with Ollama
+    category: coding
+    hours: 8
+    focus: [ollama.com, Code.exe]
+
+  - name: Papers
+    category: ai
+    hours: 12
+    focus: [arxiv.org, Zotero.exe]

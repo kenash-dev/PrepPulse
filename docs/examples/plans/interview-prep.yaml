@@ -1,0 +1,76 @@
+# PrepPulse study plan
+# Import from the tray (Plans › Import), or drop it in Documents\PrepPulse\plans.
+# Durations: 90m, 2h, 1h30m. Dates: YYYY-MM-DD.
+
+name: Interview prep — AI engineer
+colour: blue
+start: 2026-10-26
+end: 2026-12-18                # interview day; leave out for an open-ended plan
+
+targets:                       # expected study time
+  weekdays: 2h
+  weekends: 4h
+  days_off: [2026-11-29]
+  overrides:
+    2026-12-13: 6h             # full mock-interview day
+
+# Each topic says how many hours it should get, in which weeks,
+# and which apps/sites count as studying it (this builds the plan's focus list).
+# "site | words" narrows a site to pages whose title contains those words.
+topics:
+  - name: Arrays, strings & hashing
+    category: coding
+    hours: 18
+    weeks: 1-3
+    focus: [leetcode.com, neetcode.io, Code.exe]
+
+  - name: Graphs & trees
+    category: coding
+    hours: 18
+    weeks: 2-5
+    focus: [leetcode.com, neetcode.io, Code.exe]
+
+  - name: Dynamic programming
+    category: coding
+    hours: 18
+    weeks: 4-7
+    focus: [leetcode.com, neetcode.io, Code.exe]
+
+  - name: System design fundamentals
+    category: design
+    hours: 24
+    weeks: 1-8
+    focus: [bytebytego.com, excalidraw.com, "youtube.com | system design"]
+
+  - name: LLM apps — RAG, evals, serving
+    category: ai
+    hours: 26
+    weeks: 1-8
+    focus: [arxiv.org, Obsidian.exe, "youtube.com | LLM"]
+
+  - name: Behavioral (STAR)
+    category: mock
+    hours: 12
+    weeks: 5-8
+    focus: ["Obsidian.exe | STAR"]
+
+  - name: Mock interviews
+    category: mock
+    hours: 20
+    weeks: 4-8
+    focus: [localhost:3000]    # Loop Prep
+
+# Optional week-by-week checklist; tick items off in the dashboard.
+weeks:
+  1:
+    - Two pointers and sliding window — 6 problems
+    - Read DDIA chapter 1
+    - Build semantic search from scratch
+  2:
+    - BFS and DFS — 5 problems
+    - Timed design: rate limiter (45 min)
+  3:
+    - Hashing and prefix sums — 6 problems
+    - Build a 30-example eval set
+  4:
+    - First full mock interview in Loop Prep
