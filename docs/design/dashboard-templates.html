@@ -13,6 +13,7 @@
   --distract: #8f8d86; --idle: #e8e6df; --idle-ink: #b3b1a9;
   --s1: #cde2fb; --s2: #86b6ef; --s3: #3987e5; --s4: #1c5cab; --s5: #0d366b; --empty: #eceae4;
   --up: #006300; --down: #b42a2a; --accent-wash: rgba(42,120,214,.10);
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -118,35 +119,190 @@ summary { cursor: pointer; }
 .btn { font: inherit; font-size: 13px; border-radius: 8px; padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); }
 .btn.primary { background: var(--c1); color: #fff; border-color: transparent; }
 .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
-ul.plain { margin: 6px 0 0; padding-left: 18px; color: var(--ink2); font-size: 13px; }
+ul.plain { margin: 12px 0 0; padding-left: 18px; color: var(--ink2); font-size: 13px; }
+ul.plain li + li { margin-top: 2px; }
+/* parts */
+.part { display: flex; gap: 14px; align-items: flex-start; margin: 40px 0 16px; padding-top: 24px; border-top: 1px solid var(--grid); }
+.part-tag { flex: none; width: 32px; height: 32px; border-radius: 8px; background: var(--c1); color: #fff; font-weight: 700; font-size: 16px; display: grid; place-items: center; }
+h2.pt { font-size: 20px; text-transform: none; letter-spacing: -.01em; color: var(--ink); margin: 2px 0 4px; }
+.part p { color: var(--ink2); max-width: 820px; }
+.ico { display: inline-block; width: 14px; text-align: center; margin-right: 4px; font-size: 12px; }
+/* taskbar mock (fixed Windows-like dark chrome in both themes) */
+.tb-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1000px) { .tb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .tb-grid { grid-template-columns: minmax(0, 1fr); } }
+.tb-cell { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.screen { position: relative; height: 140px; border-radius: 8px; background: linear-gradient(160deg, #3d4f6b, #1d2532); overflow: hidden; display: flex; align-items: flex-end; }
+.taskbar { width: 100%; height: 40px; background: rgba(28,28,28,.94); display: flex; align-items: center; gap: 6px; padding-left: 10px; position: relative; }
+.tb-btn { width: 32px; height: 32px; border-radius: 5px; display: grid; place-items: center; position: relative; }
+.tb-btn .g { width: 16px; height: 16px; border-radius: 4px; background: #6b7280; opacity: .7; }
+.tb-btn.pp { background: rgba(255,255,255,.09); }
+.pp-logo { width: 18px; height: 18px; border-radius: 5px; background: #2a78d6; color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.pp-logo.sm { width: 16px; height: 16px; font-size: 10px; border-radius: 4px; }
+.tb-btn .prog { position: absolute; left: 3px; right: 3px; bottom: 1px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.16); overflow: hidden; }
+.tb-btn .prog i { display: block; height: 100%; background: var(--state); border-radius: 2px; }
+.tray-area { position: absolute; right: 8px; display: flex; align-items: center; gap: 7px; color: #e5e5e5; font-size: 11px; font-variant-numeric: tabular-nums; }
+.chev { flex: none; }
+.tray-ring { width: 16px; height: 16px; border-radius: 50%; flex: none; position: relative;
+  background: conic-gradient(var(--state) 0 77%, rgba(255,255,255,.22) 77% 100%); }
+.tray-ring::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: #1c1c1c; }
+.tray-ring::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--state); z-index: 1; }
+.clk { text-align: right; line-height: 1.25; font-size: 10px; white-space: nowrap; }
+.alerting .tray-ring { animation: blink 1s steps(2, start) infinite; }
+@keyframes blink { 50% { opacity: .15; } }
+.screen.edge { animation: edge 1.4s ease-in-out infinite; }
+@keyframes edge { 0%, 100% { box-shadow: inset 0 0 0 0 rgba(208,59,59,0); } 50% { box-shadow: inset 0 0 0 4px rgba(208,59,59,.95); } }
+@media (prefers-reduced-motion: reduce) { .alerting .tray-ring, .screen.edge { animation: none; } .screen.edge { box-shadow: inset 0 0 0 4px rgba(208,59,59,.95); } }
+/* settings mock */
+.settings { display: grid; gap: 6px; font-size: 13px; color: var(--ink2); }
+.set-group { font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+.set-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.settings label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.settings input[type=checkbox] { accent-color: var(--c1); width: 16px; height: 16px; margin: 0; }
+.settings input[type=number], .settings select { font: inherit; font-size: 13px; color: var(--ink); background: var(--page); border: 1px solid var(--border); border-radius: 6px; padding: 3px 6px; }
+.settings input[type=number] { width: 56px; text-align: right; }
+.btn.tiny { padding: 3px 8px; font-size: 12px; }
+code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--empty); padding: 1px 4px; border-radius: 4px; }
+.tip-bubble { position: absolute; right: 8px; bottom: 46px; background: #2b2b2b; color: #eee; font-size: 11px; line-height: 1.4; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.12); max-width: calc(100% - 16px); }
+.thumb { position: absolute; left: 6px; bottom: 44px; width: 156px; max-width: calc(100% - 12px); background: #2b2b2b; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 6px 8px; color: #eee; font-size: 10px; }
+.thumb .mini { height: 22px; border-radius: 4px; background: #3a3a3a; margin: 4px 0; }
+.thumb .tbtns { display: flex; justify-content: center; gap: 6px; }
+.thumb .tbtns span { width: 26px; height: 18px; border-radius: 4px; background: #444; display: grid; place-items: center; font-size: 9px; }
+.state-label { font-size: 13px; color: var(--ink2); }
+.state-label b { color: var(--ink); }
+.flash { animation: flash 1.4s ease-in-out infinite; }
+@keyframes flash { 50% { background: rgba(208,59,59,.6); } }
+@media (prefers-reduced-motion: reduce) { .flash { animation: none; background: rgba(208,59,59,.6); } }
+/* toast mock */
+.toast { border: 1px solid var(--border); border-radius: 10px; background: var(--page); padding: 12px 14px; box-shadow: 0 6px 22px rgba(0,0,0,.10); }
+.toast + .toast { margin-top: 12px; }
+.toast-head { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.toast > b { display: block; font-size: 14px; }
+.toast p { font-size: 13px; color: var(--ink2); margin-top: 2px; }
+.toast .btns { margin-top: 10px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>PrepPulse — dashboard design templates</h1>
-      <p class="lede">Candidate graphs for an interview-prep tracker that records sessions (start/stop), the focused app and window, and pauses of 2+ minutes with no keyboard or mouse input. Every chart runs on <b>sample data</b> for 26 Oct – 8 Nov 2026 with a mock interview date of 18 Dec. Hover any chart for details. Cards marked <b>MVP</b> are the suggested first cut.</p>
+      <h1>PrepPulse — design templates</h1>
+      <p class="lede">Two parts share one capture engine and database: <b>A</b> tracks focus live during the current study session (taskbar, tray, alerts), and <b>B</b> shows overall progress against the plan. Everything runs on <b>sample data</b> for 26 Oct – 8 Nov 2026 with a mock interview date of 18 Dec. Hover any chart for details. Cards marked <b>MVP</b> are the suggested first cut.</p>
     </div>
     <button class="theme" id="themeBtn" type="button">Toggle dark mode</button>
   </header>
   <div class="legend" id="catLegend"></div>
 
-  <h2>1 · Today</h2>
-  <div class="tiles" id="tiles"></div>
-
-  <div class="grid" style="margin-top:16px">
+  <div class="part">
+    <span class="part-tag">A</span>
+    <div>
+      <h2 class="pt">Current session — live focus tracking</h2>
+      <p>What you see while studying: start/stop, what has focus right now, idle detection, and an alert after 5 minutes off-task. Lives in the taskbar and tray; never needs the dashboard open.</p>
+    </div>
+  </div>
+  <div class="grid">
     <section class="card span2">
-      <div class="card-head"><h3>Session timeline</h3><span class="badge mvp">MVP</span></div>
-      <p class="meta"><b>Answers:</b> when did I start and stop, what was I focused on, and where did I stall? <b>Built from:</b> sessions, focus segments, idle gaps.</p>
-      <div class="chart" id="ch-timeline"></div>
-      <div class="scroll"><table id="sessTable"></table></div>
+      <div class="card-head"><h3>Taskbar &amp; tray states</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Shows:</b> the taskbar button's progress bar fills toward <b>today's target</b>; its colour is the <b>current focus state</b>. The button appears only while a session runs; the tray icon is always there. <b>Built from:</b> live session state.</p>
+      <div class="tb-grid">
+        <div class="tb-cell" style="--state:var(--good)">
+          <div class="screen">
+            <div class="tip-bubble">PrepPulse · Session 3 · 47:12<br>Focused: Loop Prep · Mock<br>Today 3h 05m / 4h</div>
+            <div class="taskbar">
+              <span class="tb-btn"><span class="g"></span></span><span class="tb-btn"><span class="g"></span></span>
+              <span class="tb-btn pp"><span class="pp-logo">P</span><span class="prog"><i style="width:77%"></i></span></span>
+              <span class="tray-area"><svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 6.5 5 3.5 8 6.5" fill="none" stroke="#ddd" stroke-width="1.3"/></svg><span class="tray-ring" title="PrepPulse tray icon"></span><span class="clk">9:04 PM<br>8/11/2026</span></span>
+            </div>
+          </div>
+          <div class="state-label"><span class="ico" style="color:var(--good)">●</span><b>Focused</b> — green, bar at 77% of today</div>
+        </div>
+        <div class="tb-cell" style="--state:var(--warn)">
+          <div class="screen">
+            <div class="tip-bubble">No input for 2:40<br>Recorded as idle from 2:00</div>
+            <div class="taskbar">
+              <span class="tb-btn"><span class="g"></span></span><span class="tb-btn"><span class="g"></span></span>
+              <span class="tb-btn pp"><span class="pp-logo">P</span><span class="prog"><i style="width:77%"></i></span></span>
+              <span class="tray-area"><svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 6.5 5 3.5 8 6.5" fill="none" stroke="#ddd" stroke-width="1.3"/></svg><span class="tray-ring" title="PrepPulse tray icon"></span><span class="clk">9:07 PM<br>8/11/2026</span></span>
+            </div>
+          </div>
+          <div class="state-label"><span class="ico" style="color:var(--warn)">◆</span><b>Idle</b> — yellow after 2 min with no input</div>
+        </div>
+        <div class="tb-cell alerting" style="--state:var(--crit)">
+          <div class="screen edge">
+            <div class="tip-bubble">5:02 off-task in WhatsApp<br>Last prep: LeetCode · 3Sum</div>
+            <div class="taskbar">
+              <span class="tb-btn"><span class="g"></span></span><span class="tb-btn"><span class="g"></span></span>
+              <span class="tb-btn pp flash"><span class="pp-logo">P</span><span class="prog"><i style="width:77%"></i></span></span>
+              <span class="tray-area"><svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 6.5 5 3.5 8 6.5" fill="none" stroke="#ddd" stroke-width="1.3"/></svg><span class="tray-ring" title="PrepPulse tray icon"></span><span class="clk">10:25 AM<br>8/11/2026</span></span>
+            </div>
+          </div>
+          <div class="state-label"><span class="ico" style="color:var(--crit)">▲</span><b>Focus lost</b> — tray icon, taskbar button and (optional) screen edge flash red; beep plays</div>
+        </div>
+        <div class="tb-cell" style="--state:var(--good)">
+          <div class="screen">
+            <div class="thumb">
+              <div>PrepPulse — Session 3 · 47:12</div>
+              <div class="mini"></div>
+              <div class="tbtns"><span title="Pause">❚❚</span><span title="Break 10 min">☕</span><span title="Stop session">■</span></div>
+            </div>
+            <div class="taskbar">
+              <span class="tb-btn"><span class="g"></span></span><span class="tb-btn"><span class="g"></span></span>
+              <span class="tb-btn pp"><span class="pp-logo">P</span><span class="prog"><i style="width:77%"></i></span></span>
+              <span class="tray-area"><svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 6.5 5 3.5 8 6.5" fill="none" stroke="#ddd" stroke-width="1.3"/></svg><span class="tray-ring" title="PrepPulse tray icon"></span><span class="clk">9:04 PM<br>8/11/2026</span></span>
+            </div>
+          </div>
+          <div class="state-label"><b>Hover preview</b> — Pause · Break · Stop buttons</div>
+        </div>
+      </div>
+      <p class="note">The tray icon (bottom-right, by the clock) is a ring: how full it is = today's progress, its colour = focus state. Bar length and colour are separate signals — you can be at 77% of today's target and still be off-task right now.</p>
+      <p class="note"><b>Windows 11 tip:</b> new tray icons start hidden behind the ^ overflow, and apps can't pin themselves. On first run PrepPulse shows a one-time tip and opens Settings › Personalization › Taskbar › Other system tray icons so you can switch it on (or drag the icon out of the overflow).</p>
     </section>
 
     <section class="card">
-      <div class="card-head"><h3>Where today's time went</h3><span class="badge mvp">MVP</span></div>
-      <p class="meta"><b>Answers:</b> which apps and sites actually got my time? <b>Built from:</b> focus segments grouped by app + title rule.</p>
-      <div class="chart" id="ch-apps"></div>
+      <div class="card-head"><h3>Focus-lost alert</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Fires when</b>, during a session, focus has been lost for the configured time (default 5 min): no keyboard or mouse input, or that long in a distraction or uncategorised app. <b>Built from:</b> idle gaps, focus segments.</p>
+      <div class="toast">
+        <div class="toast-head"><span class="pp-logo sm">P</span>PrepPulse · now</div>
+        <b>5 minutes off-task</b>
+        <p>You've been in WhatsApp since 10:20. Last prep: LeetCode · 15. 3Sum.</p>
+        <div class="btns"><button class="btn primary" type="button">Back to it</button><button class="btn" type="button">Break 10 min</button><button class="btn" type="button">End session</button></div>
+      </div>
+      <div class="toast">
+        <div class="toast-head"><span class="pp-logo sm">P</span>PrepPulse · now</div>
+        <b>No input for 5 minutes</b>
+        <p>Still with it? Last prep: Chrome · arXiv (15:20).</p>
+        <div class="btns"><button class="btn primary" type="button">I'm reading</button><button class="btn" type="button">Break 10 min</button><button class="btn" type="button">End session</button></div>
+      </div>
+      <ul class="plain">
+        <li>One alert per gap; no repeats until you're back on task.</li>
+        <li>"Break" snoozes alerts and pings when the break ends.</li>
+        <li>"I'm reading" marks the gap as prep. Video and PDF apps on the passive list don't trigger the no-input alert.</li>
+        <li>No alerts while the PC is locked or asleep — the session pauses instead.</li>
+        <li>If Windows Do Not Disturb hides the toast, the tray icon and taskbar still flash and the beep (if on) still plays.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Alert settings</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Configurable:</b> how long focus can be lost before PrepPulse reacts, and how it gets your attention. The controls work in this mockup but don't save. Stored in <code>appsettings.json</code>.</p>
+      <div class="settings">
+        <div class="set-row"><span>Alert when focus is lost for</span><span><input type="number" value="5" min="1" max="60" aria-label="Alert threshold in minutes"> min</span></div>
+        <div class="set-row"><span>Count as idle after no input for</span><span><input type="number" value="2" min="1" max="30" aria-label="Idle threshold in minutes"> min</span></div>
+        <div class="set-group">Focus counts as lost when</div>
+        <label><input type="checkbox" checked>No keyboard or mouse input</label>
+        <label><input type="checkbox" checked>A distracting or uncategorised app has focus</label>
+        <div class="set-group">Flash</div>
+        <label><input type="checkbox" checked>Tray icon by the clock</label>
+        <label><input type="checkbox" checked>Taskbar button</label>
+        <label><input type="checkbox">Screen edge (red border, all monitors)</label>
+        <div class="set-group">Sound</div>
+        <label><input type="checkbox" checked>Beep with <select aria-label="Alert sound"><option>Windows "Exclamation"</option><option>Soft chime</option><option>Custom .wav…</option></select><button class="btn tiny" type="button">▶ Test</button></label>
+        <div class="set-row"><span>Repeat every</span><span><input type="number" value="2" min="1" max="30" aria-label="Repeat interval in minutes"> min, up to <input type="number" value="3" min="1" max="10" aria-label="Maximum repeats"> times</span></div>
+        <label><input type="checkbox">Beep only for distracting apps, not for no input</label>
+        <div class="set-group">Notification</div>
+        <label><input type="checkbox" checked>Show a toast with Back to it · Break · End session</label>
+      </div>
+      <p class="note">Escalation: at the threshold → toast + flash + one beep. Still off-task → beep again every 2 min, up to 3 times, then keep flashing silently until you're back.</p>
     </section>
 
     <section class="card">
@@ -176,9 +332,41 @@ ul.plain { margin: 6px 0 0; padding-left: 18px; color: var(--ink2); font-size: 1
         </div>
       </div>
     </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Where today's time went</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> which apps and sites actually got my time? <b>Built from:</b> focus segments grouped by app + title rule.</p>
+      <div class="chart" id="ch-apps"></div>
+    </section>
+
+    <section class="card span2">
+      <div class="card-head"><h3>Today's sessions timeline</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> when did I start and stop, what was I focused on, where did I stall, and when did an alert fire? <b>Built from:</b> sessions, focus segments, idle gaps, alerts.</p>
+      <div class="chart" id="ch-timeline"></div>
+      <div class="legend" style="margin-top:4px"><span class="key"><span class="ico" style="color:var(--crit)">▲</span>Focus-lost alert</span></div>
+      <div class="scroll"><table id="sessTable"></table></div>
+    </section>
+
+
+    <section class="card span2">
+      <div class="card-head"><h3>Focus-lost alerts today</h3><span class="badge">Later</span></div>
+      <p class="meta"><b>Answers:</b> what pulled me away, and how fast did I get back? <b>Built from:</b> alerts and the response chosen on each.</p>
+      <div class="scroll"><table id="alertTable"></table></div>
+      <p class="note" id="alertNote"></p>
+    </section>
   </div>
 
-  <h2>2 · Am I on track?</h2>
+  <div class="part">
+    <span class="part-tag">B</span>
+    <div>
+      <h2 class="pt">Overall progress</h2>
+      <p>The dashboard: how today and the whole prep window compare with the plan, and how focus quality is trending. Opened from the tray when you want to review.</p>
+    </div>
+  </div>
+  <h2>Today at a glance</h2>
+  <div class="tiles" id="tiles"></div>
+
+  <h2>Am I on track?</h2>
   <div class="grid">
     <section class="card span2">
       <div class="card-head"><h3>Daily progress vs expected</h3><span class="badge mvp">MVP</span></div>
@@ -207,7 +395,7 @@ ul.plain { margin: 6px 0 0; padding-left: 18px; color: var(--ink2); font-size: 1
     </section>
   </div>
 
-  <h2>3 · Focus quality</h2>
+  <h2>Focus quality over time</h2>
   <div class="grid">
     <section class="card">
       <div class="card-head"><h3>Focus ratio by day</h3><span class="badge mvp">MVP</span></div>
@@ -249,6 +437,8 @@ ul.plain { margin: 6px 0 0; padding-left: 18px; color: var(--ink2); font-size: 1
         <tr><td>Switch rate</td><td style="text-align:left">foreground app changes ÷ session hours</td><td style="text-align:left">Switches</td></tr>
         <tr><td>Goal attainment</td><td style="text-align:left">active prep ÷ daily target; streak = consecutive days ≥ 1 session</td><td style="text-align:left">Daily, calendar, tiles</td></tr>
         <tr><td>Plan pace</td><td style="text-align:left">cumulative actual ÷ cumulative planned to date; projection = 7-day average × days left</td><td style="text-align:left">Burn-up, tiles</td></tr>
+        <tr><td>Focus-lost alerts</td><td style="text-align:left">alerts fired per session, split by trigger (no input / off-task app)</td><td style="text-align:left">Timeline, alerts table, taskbar</td></tr>
+        <tr><td>Time to refocus</td><td style="text-align:left">alert → next input in a prep-category app</td><td style="text-align:left">Alerts table</td></tr>
         <tr><td>Topic hours</td><td style="text-align:left">active prep tagged per topic vs topic plan</td><td style="text-align:left">Topic coverage</td></tr>
       </tbody>
     </table></div>
@@ -351,6 +541,13 @@ const SESSIONS = [['09:05', '11:40'], ['14:10', '16:25'], ['20:30', '21:45']].ma
   return { n: i + 1, s, e, len: e - s, active, idle: sum(c => c === 'idle'), distract: sum(c => c === 'distract'), gaps: segs.filter(x => x.cat === 'idle').length };
 });
 
+const ALERTS = [ // at, trigger, gap started, app, response, back on task
+  ['09:56', 'No input', '09:51', 'Chrome · LeetCode', 'Back to it', '09:58'],
+  ['10:25', 'Off-task app', '10:20', 'WhatsApp', 'Back to it', '10:26'],
+  ['11:10', 'No input', '11:05', 'Chrome · ByteByteGo', 'Ignored', '11:14'],
+  ['15:25', 'No input', '15:20', 'Chrome · arXiv', 'Break 10 min', '15:44'],
+  ['21:20', 'Off-task app', '21:15', 'Chrome · Reddit', 'Back to it', '21:21'],
+].map(([at, kind, since, app, resp, back]) => ({ at: toMin(at), kind, since: toMin(since), app, resp, back: toMin(back) }));
 const TOTALS = [95, 130, 70, 125, 40, 210, 260, 110, 140, 0, 120, 85, 230, null];
 const DAYS = TOTALS.map((t, i) => {
   const by = {};
@@ -431,6 +628,10 @@ function renderTiles() {
 function renderTables() {
   document.getElementById('sessTable').innerHTML = `<thead><tr><th>Session</th><th>Start</th><th>Stop</th><th>Length</th><th>Active prep</th><th>Idle</th><th>Distraction</th><th>Focus</th></tr></thead><tbody>` +
     SESSIONS.map(x => `<tr><td>Session ${x.n}</td><td>${clock(x.s)}</td><td>${clock(x.e)}</td><td>${fmtMin(x.len)}</td><td>${fmtMin(x.active)}</td><td>${x.idle ? fmtMin(x.idle) + ` (${x.gaps})` : '–'}</td><td>${x.distract ? fmtMin(x.distract) : '–'}</td><td>${Math.round(x.active / x.len * 100)}%</td></tr>`).join('') + '</tbody>';
+  document.getElementById('alertTable').innerHTML = `<thead><tr><th>Time</th><th style="text-align:left">Trigger</th><th style="text-align:left">App</th><th style="text-align:left">Response</th><th>Back after</th></tr></thead><tbody>` +
+    ALERTS.map(a => `<tr><td>${clock(a.at)}</td><td style="text-align:left;white-space:nowrap;min-width:0">${a.kind}</td><td style="text-align:left;white-space:nowrap;min-width:0">${a.app}</td><td style="text-align:left;white-space:nowrap;min-width:0">${a.resp}</td><td>${fmtMin(a.back - a.at)}</td></tr>`).join('') + '</tbody>';
+  const quick = ALERTS.filter(a => a.resp !== 'Break 10 min').map(a => a.back - a.at);
+  document.getElementById('alertNote').textContent = `${ALERTS.length} alerts today. Average time back on task (excluding breaks): ${Math.round(quick.reduce((p, q) => p + q, 0) / quick.length)} min.`;
   document.getElementById('dailyTable').innerHTML = `<thead><tr><th>Day</th>${CATS.map(c => `<th>${c.name}</th>`).join('')}<th>Total</th><th>Target</th><th>%</th></tr></thead><tbody>` +
     DAYS.map(d => `<tr><td>${fmtDate(d.date)}</td>${CATS.map(c => `<td>${d.by[c.key] ? fmtMin(d.by[c.key]) : '–'}</td>`).join('')}<td>${d.total ? fmtMin(d.total) : '–'}</td><td>${fmtMin(d.target)}</td><td>${Math.round(d.total / d.target * 100)}%</td></tr>`).join('') + '</tbody>';
 }
@@ -451,7 +652,7 @@ function hatchDefs(s) {
 }
 
 function drawTimeline() {
-  const { s, w, h } = svgIn('ch-timeline', 112);
+  const { s, w, h } = svgIn('ch-timeline', 128);
   hatchDefs(s);
   const m = { l: 10, r: 10, t: 36, b: 26 }, t0 = 8 * 60, t1 = 22 * 60;
   const x = t => m.l + (t - t0) / (t1 - t0) * (w - m.l - m.r);
@@ -459,11 +660,11 @@ function drawTimeline() {
   const step = w < 560 ? 3 : w < 820 ? 2 : 1;
   for (let hr = 8; hr <= 22; hr += step) {
     const xx = crisp(x(hr * 60));
-    el('line', { x1: xx, x2: xx, y1: m.t + bandH + 4, y2: m.t + bandH + 8, class: 'ax' }, s);
+    el('line', { x1: xx, x2: xx, y1: m.t + bandH + 18, y2: m.t + bandH + 22, class: 'ax' }, s);
     const anchor = hr === 8 ? 'start' : hr + step > 22 ? 'end' : 'middle';
     el('text', { x: anchor === 'start' ? m.l : anchor === 'end' ? w - m.r : xx, y: h - 6, 'text-anchor': anchor, class: 'tick', text: `${String(hr).padStart(2, '0')}:00` }, s);
   }
-  el('line', { x1: m.l, x2: w - m.r, y1: crisp(m.t + bandH + 4), y2: crisp(m.t + bandH + 4), class: 'ax' }, s);
+  el('line', { x1: m.l, x2: w - m.r, y1: crisp(m.t + bandH + 18), y2: crisp(m.t + bandH + 18), class: 'ax' }, s);
   SESSIONS.forEach(ss => {
     const a = x(ss.s), b = x(ss.e), yb = m.t - 8;
     el('path', { d: `M${a},${yb + 4}V${yb}H${b}V${yb + 4}`, style: 'fill:none;stroke:var(--axis);stroke-width:1' }, s);
@@ -475,6 +676,13 @@ function drawTimeline() {
     const a = x(seg.s), b = x(seg.e), c = catOf(seg.cat);
     const node = el('rect', { x: a + 1, y: m.t, width: Math.max(1, b - a - 2), height: bandH, rx: 3, style: `fill:${c.color}` }, s);
     hover(node, () => `<div class="t">${clock(seg.s)}–${clock(seg.e)} · ${fmtMin(seg.d)}</div>` + tipRow('Category', c.name, seg.cat === 'idle' ? '' : c.color) + (seg.app !== '—' ? tipRow('App', seg.app) : '') + `<div class="r" style="margin-top:2px">${seg.title}</div>`);
+  });
+  ALERTS.forEach(a => {
+    const ax = x(a.at), ay = m.t + bandH + 4;
+    const tri = el('path', { d: `M${ax},${ay}L${ax + 5},${ay + 9}L${ax - 5},${ay + 9}Z`, style: 'fill:var(--crit);stroke:var(--surface);stroke-width:1.5;stroke-linejoin:round' }, s);
+    const hit = el('rect', { x: ax - 9, y: ay - 2, width: 18, height: 14, class: 'hit' }, s);
+    const t = () => `<div class="t">Focus-lost alert · ${clock(a.at)}</div>` + tipRow('Trigger', a.kind) + tipRow('Since', clock(a.since)) + tipRow('App', a.app) + tipRow('Response', a.resp) + tipRow('Back on task', fmtMin(a.back - a.at) + ' later');
+    hover(hit, t); hover(tri, t);
   });
 }
 
