@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrepPulse Design Templates</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10);
+  --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100;
+  --distract: #8f8d86; --idle: #e8e6df; --idle-ink: #b3b1a9;
+  --s1: #cde2fb; --s2: #86b6ef; --s3: #3987e5; --s4: #1c5cab; --s5: #0d366b; --empty: #eceae4;
+  --up: #006300; --down: #b42a2a; --accent-wash: rgba(42,120,214,.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+    --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500;
+    --distract: #6f6e68; --idle: #2a2a28; --idle-ink: #4c4b47;
+    --s1: #104281; --s2: #1c5cab; --s3: #2a78d6; --s4: #5598e7; --s5: #9ec5f4; --empty: #252524;
+    --up: #0ca30c; --down: #e66767; --accent-wash: rgba(57,135,229,.16);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+  --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500;
+  --distract: #6f6e68; --idle: #2a2a28; --idle-ink: #4c4b47;
+  --s1: #104281; --s2: #1c5cab; --s3: #2a78d6; --s4: #5598e7; --s5: #9ec5f4; --empty: #252524;
+  --up: #0ca30c; --down: #e66767; --accent-wash: rgba(57,135,229,.16);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--page); color: var(--ink);
+  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding: 28px 16px 64px; }
+header.top { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 36px 0 12px; font-weight: 600; }
+h3 { font-size: 15px; margin: 0; }
+p { margin: 0; }
+.lede { color: var(--ink2); max-width: 760px; }
+button.theme {
+  font: inherit; font-size: 13px; color: var(--ink2); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; cursor: pointer;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; font-size: 13px; color: var(--ink2); }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+.sw.idle { background: repeating-linear-gradient(45deg, var(--idle-ink) 0 1.5px, var(--idle) 1.5px 5px); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.span2 { grid-column: span 2; }
+@media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } .span2 { grid-column: auto; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px 14px; min-width: 0; }
+.card-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.badge { font-size: 11px; font-weight: 600; letter-spacing: .04em; border-radius: 999px; padding: 2px 8px; border: 1px solid var(--border); color: var(--ink2); white-space: nowrap; }
+.badge.mvp { background: var(--accent-wash); color: var(--ink); }
+.meta { margin: 6px 0 10px; font-size: 13px; color: var(--ink2); }
+.meta b { color: var(--ink); font-weight: 600; }
+.chart { width: 100%; }
+.note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tick.strong { fill: var(--ink); font-weight: 600; }
+.lbl { fill: var(--ink2); font-size: 12px; }
+.lbl.strong { fill: var(--ink); font-weight: 600; }
+.gl { stroke: var(--grid); stroke-width: 1; }
+.ax { stroke: var(--axis); stroke-width: 1; }
+.target { stroke: var(--ink2); stroke-width: 2; stroke-linecap: round; }
+.hit { fill: transparent; cursor: default; }
+.xhair { stroke: var(--axis); stroke-width: 1; }
+/* KPI tiles */
+.tiles { display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); gap: 12px; }
+@media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } .tile.hero { grid-column: span 2; } }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.tile .label { font-size: 12px; color: var(--ink2); }
+.tile .value { font-size: 26px; font-weight: 600; margin-top: 2px; letter-spacing: -.01em; }
+.tile.hero .value { font-size: 48px; line-height: 1.05; }
+.tile .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.delta-up { color: var(--up); font-weight: 600; }
+.delta-down { color: var(--down); font-weight: 600; }
+.meter { height: 8px; border-radius: 999px; background: var(--s1); margin-top: 10px; overflow: hidden; }
+.meter > i { display: block; height: 100%; background: var(--c1); border-radius: 999px; }
+/* tables */
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+td[style*="text-align:left"] { white-space: normal; min-width: 180px; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+details { margin-top: 8px; font-size: 13px; color: var(--ink2); }
+summary { cursor: pointer; }
+.scroll { overflow-x: auto; }
+/* tooltip */
+#tip {
+  position: fixed; z-index: 10; pointer-events: none; min-width: 160px; max-width: 300px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.14);
+}
+#tip .t { font-weight: 600; margin-bottom: 4px; }
+#tip .r { display: flex; justify-content: space-between; gap: 14px; color: var(--ink2); }
+#tip .r b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* tray mockups */
+.mocks { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 700px) { .mocks { grid-template-columns: 1fr; } }
+.flyout { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: var(--page); }
+.rec { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+.rec::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--down); }
+.clock { font-size: 32px; font-weight: 600; letter-spacing: -.01em; margin: 4px 0 8px; font-variant-numeric: tabular-nums; }
+.row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; padding: 3px 0; color: var(--ink2); }
+.row b { color: var(--ink); font-weight: 600; }
+.btns { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.btn { font: inherit; font-size: 13px; border-radius: 8px; padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); }
+.btn.primary { background: var(--c1); color: #fff; border-color: transparent; }
+.hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+ul.plain { margin: 6px 0 0; padding-left: 18px; color: var(--ink2); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>PrepPulse — dashboard design templates</h1>
+      <p class="lede">Candidate graphs for an interview-prep tracker that records sessions (start/stop), the focused app and window, and pauses of 2+ minutes with no keyboard or mouse input. Every chart runs on <b>sample data</b> for 26 Oct – 8 Nov 2026 with a mock interview date of 18 Dec. Hover any chart for details. Cards marked <b>MVP</b> are the suggested first cut.</p>
+    </div>
+    <button class="theme" id="themeBtn" type="button">Toggle dark mode</button>
+  </header>
+  <div class="legend" id="catLegend"></div>
+
+  <h2>1 · Today</h2>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="grid" style="margin-top:16px">
+    <section class="card span2">
+      <div class="card-head"><h3>Session timeline</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> when did I start and stop, what was I focused on, and where did I stall? <b>Built from:</b> sessions, focus segments, idle gaps.</p>
+      <div class="chart" id="ch-timeline"></div>
+      <div class="scroll"><table id="sessTable"></table></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Where today's time went</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> which apps and sites actually got my time? <b>Built from:</b> focus segments grouped by app + title rule.</p>
+      <div class="chart" id="ch-apps"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Tray flyout &amp; return prompt</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> is it recording, and what was that pause? <b>Built from:</b> live state; the prompt labels idle gaps.</p>
+      <div class="mocks">
+        <div class="flyout" aria-label="Tray flyout mockup">
+          <span class="rec">Recording · Session 3</span>
+          <div class="clock">00:47:12</div>
+          <div class="row"><span>Focused now</span><b>Loop Prep · Mock</b></div>
+          <div class="row"><span>No input for</span><b>0:04</b></div>
+          <div class="row"><span>Today</span><b>5h 13m / 4h</b></div>
+          <div class="meter"><i style="width:100%"></i></div>
+          <div class="btns"><button class="btn" type="button">Pause</button><button class="btn primary" type="button">Stop session</button></div>
+          <p class="hint">Ctrl+Alt+P start/stop · auto-pauses on lock</p>
+        </div>
+        <div class="flyout" aria-label="Return prompt mockup">
+          <b>Welcome back — no input for 24 min</b>
+          <p class="hint" style="margin-top:4px">15:20 – 15:44 · last app: Chrome · arXiv</p>
+          <div class="btns">
+            <button class="btn" type="button">Break</button>
+            <button class="btn" type="button">Reading / watching</button>
+            <button class="btn" type="button">Thinking / paper</button>
+            <button class="btn" type="button">Skip</button>
+          </div>
+          <p class="hint">"Reading" and "Thinking" count as prep time; "Break" doesn't. Ignored prompts stay as idle.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <h2>2 · Am I on track?</h2>
+  <div class="grid">
+    <section class="card span2">
+      <div class="card-head"><h3>Daily progress vs expected</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> did I hit today's target, and what did I spend it on? Columns are prep minutes by category; the dark tick is that day's target (2h weekdays, 4h weekends). <b>Built from:</b> focus segments × category, daily goals.</p>
+      <div class="chart" id="ch-daily"></div>
+      <details><summary>Show data table</summary><div class="scroll"><table id="dailyTable"></table></div></details>
+    </section>
+
+    <section class="card span2">
+      <div class="card-head"><h3>Cumulative burn-up to interview day</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> at my current pace, will I finish the plan before the interview? Solid blue is actual, dashed is the 7-day-pace projection. <b>Built from:</b> daily totals, plan window, daily goals.</p>
+      <div class="chart" id="ch-burnup"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Prep calendar</h3><span class="badge">Later</span></div>
+      <p class="meta"><b>Answers:</b> how consistent am I, and how many days are left? Shade is % of that day's target. <b>Built from:</b> daily totals ÷ daily goal.</p>
+      <div class="chart" id="ch-cal"></div>
+      <div class="legend" id="calLegend"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Topic coverage vs plan</h3><span class="badge">Later</span></div>
+      <p class="meta"><b>Answers:</b> which topics am I neglecting? Bar is hours done, tick is where the plan says I should be today, track is the full plan. <b>Built from:</b> sessions tagged with a topic (manually or by title rules).</p>
+      <div class="chart" id="ch-topics"></div>
+    </section>
+  </div>
+
+  <h2>3 · Focus quality</h2>
+  <div class="grid">
+    <section class="card">
+      <div class="card-head"><h3>Focus ratio by day</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> how much of my session time was real prep? Active prep ÷ session length; the hairline is an 80% goal. <b>Built from:</b> sessions, idle gaps, distraction segments.</p>
+      <div class="chart" id="ch-focus"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>App switches per hour</h3><span class="badge">Later</span></div>
+      <p class="meta"><b>Answers:</b> am I fragmenting my attention? Count of foreground-app changes ÷ session hours. <b>Built from:</b> focus segments.</p>
+      <div class="chart" id="ch-switch"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>Idle pauses by length (last 14 days)</h3><span class="badge">Later</span></div>
+      <p class="meta"><b>Answers:</b> are my pauses short resets or long drifts? Only gaps of 2+ minutes are recorded. <b>Built from:</b> idle gaps.</p>
+      <div class="chart" id="ch-idle"></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h3>When I focus best</h3><span class="badge">Later</span></div>
+      <p class="meta"><b>Answers:</b> which hours are my most productive? Average active prep minutes per hour, last 14 days. <b>Built from:</b> focus segments bucketed by hour.</p>
+      <div class="chart" id="ch-hours"></div>
+      <div class="legend" id="hourLegend"></div>
+    </section>
+  </div>
+
+  <h2>Metrics behind these charts</h2>
+  <section class="card">
+    <div class="scroll"><table>
+      <thead><tr><th>Metric</th><th style="text-align:left">Definition</th><th style="text-align:left">Used in</th></tr></thead>
+      <tbody>
+        <tr><td>Session length</td><td style="text-align:left">stop − start (manual start/stop, auto-stop after a long idle)</td><td style="text-align:left">Timeline, focus ratio</td></tr>
+        <tr><td>Active prep time</td><td style="text-align:left">time in prep-category apps with input in the last 2 min, plus pauses labelled Reading/Thinking</td><td style="text-align:left">Daily, burn-up, calendar, tiles</td></tr>
+        <tr><td>Idle gap</td><td style="text-align:left">no keyboard or mouse input for ≥ 2 min (backdated to the last input)</td><td style="text-align:left">Timeline, idle histogram</td></tr>
+        <tr><td>Distraction time</td><td style="text-align:left">focus time in apps/sites the rules mark as distraction</td><td style="text-align:left">Timeline, apps, focus ratio</td></tr>
+        <tr><td>Focus ratio</td><td style="text-align:left">active prep ÷ session length</td><td style="text-align:left">Focus ratio, tiles</td></tr>
+        <tr><td>Longest focus block</td><td style="text-align:left">longest run of prep categories with no idle gap or distraction</td><td style="text-align:left">Tiles</td></tr>
+        <tr><td>Switch rate</td><td style="text-align:left">foreground app changes ÷ session hours</td><td style="text-align:left">Switches</td></tr>
+        <tr><td>Goal attainment</td><td style="text-align:left">active prep ÷ daily target; streak = consecutive days ≥ 1 session</td><td style="text-align:left">Daily, calendar, tiles</td></tr>
+        <tr><td>Plan pace</td><td style="text-align:left">cumulative actual ÷ cumulative planned to date; projection = 7-day average × days left</td><td style="text-align:left">Burn-up, tiles</td></tr>
+        <tr><td>Topic hours</td><td style="text-align:left">active prep tagged per topic vs topic plan</td><td style="text-align:left">Topic coverage</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+// ---------- helpers ----------
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in (attrs || {})) { if (k === 'text') e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); }
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function svgIn(id, h) {
+  const host = document.getElementById(id);
+  host.innerHTML = '';
+  const w = Math.max(280, Math.floor(host.clientWidth));
+  const s = el('svg', { width: w, height: h, viewBox: `0 0 ${w} ${h}`, role: 'img' });
+  host.appendChild(s);
+  return { s, w, h };
+}
+const crisp = v => Math.round(v) + 0.5;
+function topRounded(x, y, w, h, r) {
+  r = Math.min(r, h, w / 2); if (h <= 0) return '';
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+function rightRounded(x, y, w, h, r) {
+  r = Math.min(r, w, h / 2); if (w <= 0) return '';
+  return `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`;
+}
+const rectPath = (x, y, w, h) => h > 0 && w > 0 ? `M${x},${y}h${w}v${h}h${-w}Z` : '';
+const fmtMin = m => { m = Math.round(m); const h = Math.floor(m / 60), r = m % 60; return h ? (r ? `${h}h ${r}m` : `${h}h`) : `${r}m`; };
+const toMin = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+const clock = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+
+const tip = document.getElementById('tip');
+function showTip(evt, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const pad = 14, r = tip.getBoundingClientRect();
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - pad;
+  if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - pad;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hover(node, fn) {
+  node.addEventListener('mousemove', e => showTip(e, fn(e)));
+  node.addEventListener('mouseleave', () => { tip.hidden = true; });
+}
+const tipRow = (k, v, color) => `<div class="r"><span>${color ? `<i class="sw" style="background:${color};vertical-align:-1px;margin-right:6px"></i>` : ''}${k}</span><b>${v}</b></div>`;
+
+// ---------- sample data ----------
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const R = rng(7);
+const CATS = [
+  { key: 'coding', name: 'Coding practice', color: 'var(--c1)' },
+  { key: 'design', name: 'System design', color: 'var(--c2)' },
+  { key: 'ai', name: 'AI / ML study', color: 'var(--c3)' },
+  { key: 'mock', name: 'Mock & behavioral', color: 'var(--c4)' },
+];
+const NONPREP = {
+  distract: { name: 'Distraction', color: 'var(--distract)' },
+  idle: { name: 'Idle pause (2+ min)', color: 'url(#hatch)' },
+};
+const catOf = k => CATS.find(c => c.key === k) || NONPREP[k];
+const START = new Date(2026, 9, 26);
+const TODAY = 13, INTERVIEW = 53;
+const dayDate = i => new Date(START.getFullYear(), START.getMonth(), START.getDate() + i);
+const isWeekend = d => d.getDay() === 0 || d.getDay() === 6;
+const targetFor = i => isWeekend(dayDate(i)) ? 240 : 120;
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const fmtDate = d => `${WD[d.getDay()]} ${d.getDate()} ${d.toLocaleString('en-AU', { month: 'short' })}`;
+const fmtShort = d => `${d.getDate()} ${d.toLocaleString('en-AU', { month: 'short' })}`;
+
+// Today's focus segments: start, end, category, app, window title, group label
+const SEGS = [
+  ['09:05', '09:32', 'coding', 'VS Code', 'two-pointers.cs — kata', 'VS Code'],
+  ['09:32', '09:51', 'coding', 'Chrome', 'LeetCode · 15. 3Sum', 'Chrome · LeetCode'],
+  ['09:51', '09:58', 'idle', '—', 'No keyboard or mouse input', ''],
+  ['09:58', '10:20', 'coding', 'Chrome', 'LeetCode · 11. Container With Most Water', 'Chrome · LeetCode'],
+  ['10:20', '10:26', 'distract', 'WhatsApp', 'Chats', 'WhatsApp'],
+  ['10:26', '11:05', 'design', 'Chrome', 'ByteByteGo · Design a rate limiter', 'Chrome · ByteByteGo'],
+  ['11:05', '11:14', 'idle', '—', 'No keyboard or mouse input', ''],
+  ['11:14', '11:40', 'design', 'Chrome', 'Excalidraw · rate-limiter sketch', 'Chrome · Excalidraw'],
+  ['14:10', '14:48', 'ai', 'Obsidian', 'RAG evaluation notes', 'Obsidian · RAG notes'],
+  ['14:48', '15:20', 'ai', 'Chrome', 'arXiv · retrieval-augmented generation', 'Chrome · arXiv'],
+  ['15:20', '15:44', 'idle', '—', 'Marked "Break" on return', ''],
+  ['15:44', '16:00', 'ai', 'Edge', 'YouTube · LLM serving at scale (passive)', 'Edge · YouTube'],
+  ['16:00', '16:25', 'coding', 'VS Code', 'graph-bfs.cs — kata', 'VS Code'],
+  ['20:30', '21:15', 'mock', 'Chrome', 'Loop Prep · Mock system design round', 'Loop Prep (localhost)'],
+  ['21:15', '21:21', 'distract', 'Chrome', 'Reddit', 'Chrome · Reddit'],
+  ['21:21', '21:45', 'mock', 'Obsidian', 'STAR stories', 'Obsidian · STAR stories'],
+].map(([a, b, cat, app, title, group]) => ({ s: toMin(a), e: toMin(b), cat, app, title, group, d: toMin(b) - toMin(a) }));
+const SESSIONS = [['09:05', '11:40'], ['14:10', '16:25'], ['20:30', '21:45']].map(([a, b], i) => {
+  const s = toMin(a), e = toMin(b), segs = SEGS.filter(x => x.s >= s && x.e <= e);
+  const sum = k => segs.filter(x => k(x.cat)).reduce((t, x) => t + x.d, 0);
+  const active = sum(c => !!CATS.find(k => k.key === c));
+  return { n: i + 1, s, e, len: e - s, active, idle: sum(c => c === 'idle'), distract: sum(c => c === 'distract'), gaps: segs.filter(x => x.cat === 'idle').length };
+});
+
+const TOTALS = [95, 130, 70, 125, 40, 210, 260, 110, 140, 0, 120, 85, 230, null];
+const DAYS = TOTALS.map((t, i) => {
+  const by = {};
+  let focus = null, switches = null;
+  if (i === TODAY) {
+    CATS.forEach(c => by[c.key] = SEGS.filter(x => x.cat === c.key).reduce((a, x) => a + x.d, 0));
+    t = CATS.reduce((a, c) => a + by[c.key], 0);
+    const len = SESSIONS.reduce((a, x) => a + x.len, 0);
+    focus = t / len;
+    let ch = 0; for (let k = 1; k < SEGS.length; k++) if (SEGS[k].app !== SEGS[k - 1].app || SEGS[k].s !== SEGS[k - 1].e) ch++;
+    switches = ch / (len / 60);
+  } else if (t > 0) {
+    const w = [.45, .25, .2, .1].map(v => v * (0.6 + R() * 0.8));
+    const sw = w.reduce((a, b) => a + b, 0);
+    let acc = 0;
+    CATS.forEach((c, k) => { by[c.key] = k < 3 ? Math.round(t * w[k] / sw) : 0; acc += by[c.key]; });
+    by.mock = t - acc;
+    focus = 0.7 + R() * 0.2;
+    switches = 3 + R() * 6;
+  } else CATS.forEach(c => by[c.key] = 0);
+  return { i, date: dayDate(i), total: t, target: targetFor(i), by, focus, switches };
+});
+const PLAN_CUM = [], ACT_CUM = [], PROJ = [];
+for (let i = 0, p = 0; i <= INTERVIEW; i++) { p += targetFor(i); PLAN_CUM.push(p); }
+for (let i = 0, a = 0; i <= TODAY; i++) { a += DAYS[i].total; ACT_CUM.push(a); }
+const PACE = DAYS.slice(TODAY - 6).reduce((a, d) => a + d.total, 0) / 7;
+for (let i = 0; i <= INTERVIEW; i++) PROJ.push(i < TODAY ? null : ACT_CUM[TODAY] + PACE * (i - TODAY));
+
+const HOURS = []; // [weekday 0=Mon..6=Sun][hour 6..23] avg minutes
+for (let wd = 0; wd < 7; wd++) {
+  const row = [];
+  for (let h = 6; h <= 23; h++) {
+    let base;
+    if (wd < 5) base = (h === 6 || h === 7) ? 28 : h === 12 ? 10 : (h >= 19 && h <= 22) ? 36 : 2;
+    else base = (h >= 9 && h <= 11) ? 38 : (h >= 14 && h <= 16) ? 32 : (h >= 20 && h <= 21) ? 28 : 3;
+    row.push(Math.max(0, Math.min(60, Math.round(base * (0.55 + R() * 0.9)))));
+  }
+  HOURS.push(row);
+}
+const IDLE_BUCKETS = [['2–5 min', 23], ['5–10 min', 14], ['10–20 min', 7], ['20–30 min', 3], ['30+ min', 2]];
+const TOPICS = [ // name, hours done, plan hours to date, plan total
+  ['Arrays, strings & hashing', 7.5, 6, 18],
+  ['Graphs & trees', 3, 5, 18],
+  ['Dynamic programming', 1.5, 4, 18],
+  ['System design fundamentals', 6.5, 6, 24],
+  ['LLM apps: RAG, evals, serving', 6, 7, 26],
+  ['Behavioral (STAR)', 2, 3, 12],
+  ['Mock interviews', 3.5, 5, 20],
+];
+
+// ---------- static pieces ----------
+function legendHTML(items) { return items.map(([n, c, cls]) => `<span class="key"><i class="sw ${cls || ''}" style="${c ? `background:${c}` : ''}"></i>${n}</span>`).join(''); }
+document.getElementById('catLegend').innerHTML = legendHTML([...CATS.map(c => [c.name, c.color]), ['Distraction', 'var(--distract)'], ['Idle pause (2+ min)', '', 'idle']]);
+document.getElementById('calLegend').innerHTML = legendHTML([['No prep', 'var(--empty)'], ['1–49%', 'var(--s2)'], ['50–79%', 'var(--s3)'], ['80–99%', 'var(--s4)'], ['Target met', 'var(--s5)'], ['Upcoming (outlined)', 'transparent;outline:1px solid var(--axis);outline-offset:-1px']]);
+document.getElementById('hourLegend').innerHTML = legendHTML([['0–5 min', 'var(--empty)'], ['6–15', 'var(--s2)'], ['16–30', 'var(--s3)'], ['31–45', 'var(--s4)'], ['46–60', 'var(--s5)']]);
+
+function renderTiles() {
+  const d = DAYS[TODAY], pct = d.total / d.target;
+  const len = SESSIONS.reduce((a, x) => a + x.len, 0);
+  const idle = SESSIONS.reduce((a, x) => a + x.idle, 0), gaps = SESSIONS.reduce((a, x) => a + x.gaps, 0);
+  // longest focus block: contiguous prep segments
+  let best = 0, run = 0, prevEnd = -1;
+  SEGS.forEach(x => { if (CATS.find(c => c.key === x.cat) && (x.s === prevEnd || run === 0)) run += x.d; else run = CATS.find(c => c.key === x.cat) ? x.d : 0; best = Math.max(best, run); prevEnd = x.e; });
+  const pace = ACT_CUM[TODAY] / PLAN_CUM[TODAY];
+  let streak = 0; for (let i = TODAY; i >= 0 && DAYS[i].total > 0; i--) streak++;
+  const behind = (PLAN_CUM[TODAY] - ACT_CUM[TODAY]) / 60;
+  document.getElementById('tiles').innerHTML = `
+    <div class="tile hero"><div class="label">Prep time today vs ${fmtMin(d.target)} target</div>
+      <div class="value">${fmtMin(d.total)}</div>
+      <div class="sub"><span class="delta-up">▲ ${Math.round(pct * 100)}% of target</span> · ${SESSIONS.length} sessions, ${fmtMin(len)} total</div>
+      <div class="meter"><i style="width:${Math.min(100, pct * 100)}%"></i></div></div>
+    <div class="tile"><div class="label">Focus ratio</div><div class="value">${Math.round(d.focus * 100)}%</div><div class="sub">active ÷ session time</div></div>
+    <div class="tile"><div class="label">Longest focus block</div><div class="value">${fmtMin(best)}</div><div class="sub">no idle or distraction</div></div>
+    <div class="tile"><div class="label">Idle pauses</div><div class="value">${gaps}</div><div class="sub">${fmtMin(idle)} with no input</div></div>
+    <div class="tile"><div class="label">Plan pace</div><div class="value">${Math.round(pace * 100)}%</div><div class="sub"><span class="delta-down">▼ ${behind.toFixed(1)}h behind</span> · ${streak}-day streak</div></div>`;
+}
+
+function renderTables() {
+  document.getElementById('sessTable').innerHTML = `<thead><tr><th>Session</th><th>Start</th><th>Stop</th><th>Length</th><th>Active prep</th><th>Idle</th><th>Distraction</th><th>Focus</th></tr></thead><tbody>` +
+    SESSIONS.map(x => `<tr><td>Session ${x.n}</td><td>${clock(x.s)}</td><td>${clock(x.e)}</td><td>${fmtMin(x.len)}</td><td>${fmtMin(x.active)}</td><td>${x.idle ? fmtMin(x.idle) + ` (${x.gaps})` : '–'}</td><td>${x.distract ? fmtMin(x.distract) : '–'}</td><td>${Math.round(x.active / x.len * 100)}%</td></tr>`).join('') + '</tbody>';
+  document.getElementById('dailyTable').innerHTML = `<thead><tr><th>Day</th>${CATS.map(c => `<th>${c.name}</th>`).join('')}<th>Total</th><th>Target</th><th>%</th></tr></thead><tbody>` +
+    DAYS.map(d => `<tr><td>${fmtDate(d.date)}</td>${CATS.map(c => `<td>${d.by[c.key] ? fmtMin(d.by[c.key]) : '–'}</td>`).join('')}<td>${d.total ? fmtMin(d.total) : '–'}</td><td>${fmtMin(d.target)}</td><td>${Math.round(d.total / d.target * 100)}%</td></tr>`).join('') + '</tbody>';
+}
+
+// ---------- charts ----------
+function yAxis(s, m, xEnd, yMax, step, y, fmt) {
+  for (let v = 0; v <= yMax + 1e-9; v += step) {
+    const yy = crisp(y(v));
+    el('line', { x1: m.l, x2: xEnd, y1: yy, y2: yy, class: v === 0 ? 'ax' : 'gl' }, s);
+    el('text', { x: m.l - 6, y: yy + 4, 'text-anchor': 'end', class: 'tick', text: fmt(v) }, s);
+  }
+}
+function hatchDefs(s) {
+  const defs = el('defs', {}, s);
+  const p = el('pattern', { id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
+  el('rect', { width: 6, height: 6, style: 'fill:var(--idle)' }, p);
+  el('line', { x1: 0, y1: 0, x2: 0, y2: 6, style: 'stroke:var(--idle-ink);stroke-width:2' }, p);
+}
+
+function drawTimeline() {
+  const { s, w, h } = svgIn('ch-timeline', 112);
+  hatchDefs(s);
+  const m = { l: 10, r: 10, t: 36, b: 26 }, t0 = 8 * 60, t1 = 22 * 60;
+  const x = t => m.l + (t - t0) / (t1 - t0) * (w - m.l - m.r);
+  const bandH = 30;
+  const step = w < 560 ? 3 : w < 820 ? 2 : 1;
+  for (let hr = 8; hr <= 22; hr += step) {
+    const xx = crisp(x(hr * 60));
+    el('line', { x1: xx, x2: xx, y1: m.t + bandH + 4, y2: m.t + bandH + 8, class: 'ax' }, s);
+    const anchor = hr === 8 ? 'start' : hr + step > 22 ? 'end' : 'middle';
+    el('text', { x: anchor === 'start' ? m.l : anchor === 'end' ? w - m.r : xx, y: h - 6, 'text-anchor': anchor, class: 'tick', text: `${String(hr).padStart(2, '0')}:00` }, s);
+  }
+  el('line', { x1: m.l, x2: w - m.r, y1: crisp(m.t + bandH + 4), y2: crisp(m.t + bandH + 4), class: 'ax' }, s);
+  SESSIONS.forEach(ss => {
+    const a = x(ss.s), b = x(ss.e), yb = m.t - 8;
+    el('path', { d: `M${a},${yb + 4}V${yb}H${b}V${yb + 4}`, style: 'fill:none;stroke:var(--axis);stroke-width:1' }, s);
+    const label = (b - a) > 96 ? `Session ${ss.n} · ${clock(ss.s)}–${clock(ss.e)}` : `${clock(ss.s)}–${clock(ss.e)}`;
+    const half = label.length * 3.4;
+    el('text', { x: Math.max(m.l + half, Math.min(w - m.r - half, (a + b) / 2)), y: yb - 6, 'text-anchor': 'middle', class: 'lbl', text: label }, s);
+  });
+  SEGS.forEach(seg => {
+    const a = x(seg.s), b = x(seg.e), c = catOf(seg.cat);
+    const node = el('rect', { x: a + 1, y: m.t, width: Math.max(1, b - a - 2), height: bandH, rx: 3, style: `fill:${c.color}` }, s);
+    hover(node, () => `<div class="t">${clock(seg.s)}–${clock(seg.e)} · ${fmtMin(seg.d)}</div>` + tipRow('Category', c.name, seg.cat === 'idle' ? '' : c.color) + (seg.app !== '—' ? tipRow('App', seg.app) : '') + `<div class="r" style="margin-top:2px">${seg.title}</div>`);
+  });
+}
+
+function drawApps() {
+  const rows = {};
+  SEGS.filter(x => x.cat !== 'idle').forEach(x => { rows[x.group] = rows[x.group] || { n: x.group, v: 0, cat: x.cat }; rows[x.group].v += x.d; });
+  const list = Object.values(rows).sort((a, b) => b.v - a.v);
+  const rowH = 24;
+  const { s, w } = svgIn('ch-apps', list.length * rowH + 6);
+  const lw = Math.min(170, w * 0.42), vmax = list[0].v, bw = w - lw - 52;
+  list.forEach((r, i) => {
+    const y = i * rowH + 4, c = catOf(r.cat);
+    el('text', { x: lw - 10, y: y + 13, 'text-anchor': 'end', class: 'lbl', text: r.n }, s);
+    const len = Math.max(2, r.v / vmax * bw);
+    el('path', { d: rightRounded(lw, y + 3, len, 14, 4), style: `fill:${c.color}` }, s);
+    el('text', { x: lw + len + 6, y: y + 14, class: 'tick', text: fmtMin(r.v) }, s);
+    const hit = el('rect', { x: 0, y, width: w, height: rowH, class: 'hit' }, s);
+    hover(hit, () => `<div class="t">${r.n}</div>` + tipRow(c.name, fmtMin(r.v), c.color));
+  });
+}
+
+function dayTip(d) {
+  const pct = Math.round(d.total / d.target * 100);
+  return `<div class="t">${fmtDate(d.date)}${d.i === TODAY ? ' (today)' : ''}</div>` +
+    tipRow('Prep time', d.total ? fmtMin(d.total) : 'none') + tipRow('Target', fmtMin(d.target)) + tipRow('Attainment', pct + '%') +
+    (d.total ? '<div style="height:6px"></div>' + CATS.filter(c => d.by[c.key]).map(c => tipRow(c.name, fmtMin(d.by[c.key]), c.color)).join('') : '');
+}
+
+function drawDaily() {
+  const { s, w, h } = svgIn('ch-daily', 250);
+  const m = { l: 34, r: 8, t: 12, b: 36 }, iw = w - m.l - m.r, ih = h - m.t - m.b, n = DAYS.length;
+  const yMax = Math.ceil(Math.max(...DAYS.map(d => Math.max(d.total, d.target))) / 60) * 60;
+  const y = v => m.t + ih - v / yMax * ih;
+  yAxis(s, m, w - m.r, yMax, 60, y, v => v ? (v / 60) + 'h' : '0');
+  const band = iw / n, bw = Math.min(24, band * 0.56);
+  DAYS.forEach((d, i) => {
+    const cx = m.l + band * (i + 0.5), x = cx - bw / 2;
+    const present = CATS.filter(c => d.by[c.key] > 0), top = present[present.length - 1];
+    let acc = 0;
+    present.forEach(c => {
+      const v = d.by[c.key], yTop = y(acc + v), yBot = y(acc) - (acc > 0 ? 2 : 0);
+      el('path', { d: c === top ? topRounded(x, yTop, bw, yBot - yTop, 4) : rectPath(x, yTop, bw, yBot - yTop), style: `fill:${c.color}` }, s);
+      acc += v;
+    });
+    const ty = crisp(y(d.target));
+    el('line', { x1: cx - band * 0.4, x2: cx + band * 0.4, y1: ty, y2: ty, class: 'target' }, s);
+    if (!d.total) el('text', { x: cx, y: y(0) - 6, 'text-anchor': 'middle', class: 'tick', text: 'missed' }, s);
+    el('text', { x: cx, y: h - m.b + 16, 'text-anchor': 'middle', class: 'tick' + (i === TODAY ? ' strong' : ''), text: d.date.getDate() }, s);
+    el('text', { x: cx, y: h - m.b + 30, 'text-anchor': 'middle', class: 'tick', text: WD[d.date.getDay()].slice(0, band < 30 ? 1 : 3) }, s);
+    hover(el('rect', { x: cx - band / 2, y: m.t, width: band, height: ih, class: 'hit' }, s), () => dayTip(d));
+  });
+}
+
+function drawBurnup() {
+  const { s, w, h } = svgIn('ch-burnup', 270);
+  const m = { l: 40, r: w < 520 ? 74 : 110, t: 22, b: 28 }, iw = w - m.l - m.r, ih = h - m.t - m.b, N = INTERVIEW;
+  const yMax = Math.ceil(Math.max(PLAN_CUM[N], PROJ[N]) / 60 / 20) * 20;
+  const x = i => m.l + i / N * iw, y = v => m.t + ih - (v / 60) / yMax * ih;
+  yAxis(s, m, m.l + iw, yMax, 20, v => m.t + ih - v / yMax * ih, v => v + 'h');
+  for (let i = 0; i <= N; i++) if (dayDate(i).getDay() === 1 && (w > 560 || (i / 7) % 2 === 0)) {
+    el('text', { x: x(i), y: h - 8, 'text-anchor': 'middle', class: 'tick', text: fmtShort(dayDate(i)) }, s);
+  }
+  const tx = crisp(x(TODAY));
+  el('line', { x1: tx, x2: tx, y1: m.t - 6, y2: m.t + ih, class: 'ax' }, s);
+  el('text', { x: tx, y: m.t - 10, 'text-anchor': 'middle', class: 'tick strong', text: 'Today' }, s);
+  el('text', { x: x(N), y: m.t - 10, 'text-anchor': 'end', class: 'tick', text: 'Interview 18 Dec' }, s);
+  const path = (arr, from, to) => arr.slice(from, to + 1).map((v, k) => `${k ? 'L' : 'M'}${x(from + k)},${y(v)}`).join('');
+  el('path', { d: path(PLAN_CUM, 0, N), style: 'fill:none;stroke:var(--ink2);stroke-width:2;stroke-linejoin:round' }, s);
+  el('path', { d: path(PROJ, TODAY, N), style: 'fill:none;stroke:var(--c1);stroke-width:2;stroke-dasharray:5 4;opacity:.75' }, s);
+  el('path', { d: `${path(ACT_CUM, 0, TODAY)}L${x(TODAY)},${y(0)}L${x(0)},${y(0)}Z`, style: 'fill:var(--accent-wash);stroke:none' }, s);
+  el('path', { d: path(ACT_CUM, 0, TODAY), style: 'fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round;stroke-linecap:round' }, s);
+  const dot = (cx, cy, color) => el('circle', { cx, cy, r: 4.5, style: `fill:${color};stroke:var(--surface);stroke-width:2` }, s);
+  dot(x(N), y(PLAN_CUM[N]), 'var(--ink2)'); dot(x(N), y(PROJ[N]), 'var(--c1)'); dot(x(TODAY), y(ACT_CUM[TODAY]), 'var(--c1)');
+  el('text', { x: x(N) + 10, y: y(PLAN_CUM[N]) - 2, class: 'lbl strong', text: `Plan ${Math.round(PLAN_CUM[N] / 60)}h` }, s);
+  el('text', { x: x(N) + 10, y: y(PROJ[N]) + 14, class: 'lbl', text: `Projected ${Math.round(PROJ[N] / 60)}h` }, s);
+  el('text', { x: x(TODAY) - 8, y: y(ACT_CUM[TODAY]) - 10, 'text-anchor': 'end', class: 'lbl strong', text: `${(ACT_CUM[TODAY] / 60).toFixed(1)}h done` }, s);
+  // crosshair
+  const g = el('g', { style: 'pointer-events:none;display:none' }, s);
+  const xl = el('line', { y1: m.t, y2: m.t + ih, class: 'xhair' }, g);
+  const d1 = el('circle', { r: 4.5, style: 'fill:var(--ink2);stroke:var(--surface);stroke-width:2' }, g);
+  const d2 = el('circle', { r: 4.5, style: 'fill:var(--c1);stroke:var(--surface);stroke-width:2' }, g);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, class: 'hit' }, s);
+  hit.addEventListener('mouseleave', () => { g.style.display = 'none'; });
+  hover(hit, e => {
+    const r = s.getBoundingClientRect();
+    const i = Math.max(0, Math.min(N, Math.round((e.clientX - r.left - m.l) / iw * N)));
+    const a = i <= TODAY ? ACT_CUM[i] : PROJ[i];
+    g.style.display = ''; xl.setAttribute('x1', crisp(x(i))); xl.setAttribute('x2', crisp(x(i)));
+    d1.setAttribute('cx', x(i)); d1.setAttribute('cy', y(PLAN_CUM[i])); d2.setAttribute('cx', x(i)); d2.setAttribute('cy', y(a));
+    const gap = (a - PLAN_CUM[i]) / 60;
+    return `<div class="t">${fmtDate(dayDate(i))}</div>` + tipRow('Planned', (PLAN_CUM[i] / 60).toFixed(1) + 'h', 'var(--ink2)') +
+      tipRow(i <= TODAY ? 'Actual' : 'Projected', (a / 60).toFixed(1) + 'h', 'var(--c1)') + tipRow('Gap', (gap >= 0 ? '+' : '−') + Math.abs(gap).toFixed(1) + 'h');
+  });
+}
+
+function seqColor(v, cuts) { const st = ['var(--empty)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)']; let k = 0; cuts.forEach((c, j) => { if (v >= c) k = j + 1; }); return st[k]; }
+
+function drawCalendar() {
+  const host = document.getElementById('ch-cal'), weeks = 8, lw = 34, gap = 4;
+  const cell = Math.min(30, Math.floor((Math.max(280, host.clientWidth) - lw - 4) / weeks) - gap);
+  const { s } = svgIn('ch-cal', 20 + 7 * (cell + gap));
+  ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach((d, r) => { if (r % 2 === 0) el('text', { x: 0, y: 20 + r * (cell + gap) + cell / 2 + 4, class: 'tick', text: d }, s); });
+  for (let wk = 0; wk < weeks; wk++) if (wk % 2 === 0) el('text', { x: lw + wk * (cell + gap), y: 12, class: 'tick', text: fmtShort(dayDate(wk * 7)) }, s);
+  for (let i = 0; i < weeks * 7; i++) {
+    const cx = lw + Math.floor(i / 7) * (cell + gap), cy = 20 + (i % 7) * (cell + gap);
+    let node;
+    if (i <= TODAY) {
+      const pct = DAYS[i].total / DAYS[i].target;
+      node = el('rect', { x: cx, y: cy, width: cell, height: cell, rx: 4, style: `fill:${pct <= 0 ? 'var(--empty)' : seqColor(pct, [0.0001, 0.5, 0.8, 1])}` }, s);
+      if (i === TODAY) el('rect', { x: cx - 2, y: cy - 2, width: cell + 4, height: cell + 4, rx: 6, style: 'fill:none;stroke:var(--ink);stroke-width:1.5' }, s);
+      hover(node, () => dayTip(DAYS[i]));
+    } else {
+      node = el('rect', { x: cx + .5, y: cy + .5, width: cell - 1, height: cell - 1, rx: 4, style: `fill:none;stroke:${i === INTERVIEW ? 'var(--c2)' : 'var(--axis)'};stroke-width:${i === INTERVIEW ? 2 : 1}` }, s);
+      if (i === INTERVIEW) el('text', { x: cx + cell / 2, y: cy + cell / 2 + 4, 'text-anchor': 'middle', class: 'tick strong', text: '★' }, s);
+      hover(node, () => `<div class="t">${fmtDate(dayDate(i))}${i === INTERVIEW ? ' · interview' : ''}</div>` + tipRow('Target', fmtMin(targetFor(i))));
+    }
+  }
+}
+
+function drawTopics() {
+  const rowH = 40, { s, w } = svgIn('ch-topics', TOPICS.length * rowH);
+  const right = 84, bw = w - right, max = Math.max(...TOPICS.map(t => t[3]));
+  TOPICS.forEach(([name, done, due, total], i) => {
+    const y = i * rowH;
+    el('text', { x: 0, y: y + 13, class: 'lbl', text: name }, s);
+    const sc = v => v / max * bw;
+    el('rect', { x: 0, y: y + 20, width: sc(total), height: 8, rx: 4, style: 'fill:var(--empty)' }, s);
+    el('rect', { x: 0, y: y + 20, width: Math.max(4, sc(done)), height: 8, rx: 4, style: 'fill:var(--c1)' }, s);
+    const tx = crisp(sc(due));
+    el('line', { x1: tx, x2: tx, y1: y + 16, y2: y + 32, class: 'target' }, s);
+    const diff = done - due;
+    const t = el('text', { x: w, y: y + 28, 'text-anchor': 'end', class: 'lbl', text: '' }, s);
+    t.innerHTML = diff >= 0 ? `<tspan style="fill:var(--up)">▲</tspan> ${diff.toFixed(1)}h ahead` : `<tspan style="fill:var(--down)">▼</tspan> ${Math.abs(diff).toFixed(1)}h behind`;
+    hover(el('rect', { x: 0, y, width: w, height: rowH, class: 'hit' }, s), () => `<div class="t">${name}</div>` + tipRow('Done', done + 'h', 'var(--c1)') + tipRow('Planned by today', due + 'h') + tipRow('Full plan', total + 'h'));
+  });
+}
+
+function drawFocus() {
+  const { s, w, h } = svgIn('ch-focus', 200);
+  const m = { l: 38, r: 44, t: 14, b: 26 }, iw = w - m.l - m.r, ih = h - m.t - m.b, n = DAYS.length;
+  const lo = 0.5, y = v => m.t + ih - (v - lo) / (1 - lo) * ih, x = i => m.l + iw * i / (n - 1);
+  yAxis(s, m, m.l + iw, 0.5, 0.1, v => y(v + lo), v => Math.round((v + lo) * 100) + '%');
+  const ty = crisp(y(0.8));
+  el('line', { x1: m.l, x2: m.l + iw, y1: ty, y2: ty, style: 'stroke:var(--ink2);stroke-width:1' }, s);
+  el('text', { x: m.l + iw + 6, y: ty + 4, class: 'tick', text: 'goal' }, s);
+  let d = '', pen = false;
+  DAYS.forEach((dd, i) => { if (dd.focus == null) { pen = false; return; } d += `${pen ? 'L' : 'M'}${x(i)},${y(dd.focus)}`; pen = true; });
+  el('path', { d, style: 'fill:none;stroke:var(--c1);stroke-width:2;stroke-linejoin:round;stroke-linecap:round' }, s);
+  DAYS.forEach((dd, i) => {
+    if (i % 2 === 1 || i === TODAY) el('text', { x: x(i), y: h - 6, 'text-anchor': 'middle', class: 'tick' + (i === TODAY ? ' strong' : ''), text: dd.date.getDate() }, s);
+    if (dd.focus == null) { el('text', { x: x(i), y: y(lo) - 6, 'text-anchor': 'middle', class: 'tick', text: '–' }, s); return; }
+    if (i === TODAY) {
+      el('circle', { cx: x(i), cy: y(dd.focus), r: 4.5, style: 'fill:var(--c1);stroke:var(--surface);stroke-width:2' }, s);
+      el('text', { x: x(i) + 8, y: y(dd.focus) - 8, class: 'lbl strong', text: Math.round(dd.focus * 100) + '%' }, s);
+    }
+    hover(el('rect', { x: x(i) - iw / (n - 1) / 2, y: m.t, width: iw / (n - 1), height: ih, class: 'hit' }, s), () => `<div class="t">${fmtDate(dd.date)}</div>` + tipRow('Focus ratio', Math.round(dd.focus * 100) + '%', 'var(--c1)'));
+  });
+}
+
+function drawColumns(id, labels, values, opts) {
+  const { s, w, h } = svgIn(id, 200);
+  const m = { l: 34, r: 8, t: 18, b: 26 }, iw = w - m.l - m.r, ih = h - m.t - m.b, n = values.length;
+  const yMax = opts.yMax, y = v => m.t + ih - v / yMax * ih;
+  yAxis(s, m, w - m.r, yMax, opts.step, y, opts.fmtAxis);
+  const band = iw / n, bw = Math.min(24, band * 0.56);
+  values.forEach((v, i) => {
+    const cx = m.l + band * (i + .5);
+    if (v != null && v > 0) el('path', { d: topRounded(cx - bw / 2, y(v), bw, y(0) - y(v), 4), style: `fill:${opts.color(i)}` }, s);
+    if (opts.capLabels && v) el('text', { x: cx, y: y(v) - 5, 'text-anchor': 'middle', class: 'tick strong', text: v }, s);
+    if (v == null) el('text', { x: cx, y: y(0) - 6, 'text-anchor': 'middle', class: 'tick', text: '–' }, s);
+    if (opts.showLabel(i)) el('text', { x: cx, y: h - 8, 'text-anchor': 'middle', class: 'tick' + (opts.strong && opts.strong(i) ? ' strong' : ''), text: labels[i] }, s);
+    hover(el('rect', { x: cx - band / 2, y: m.t, width: band, height: ih, class: 'hit' }, s), () => opts.tip(i));
+  });
+}
+
+function drawHours() {
+  const host = document.getElementById('ch-hours'), lw = 34, cols = 18, gap = 2;
+  const cw = (Math.max(280, host.clientWidth) - lw) / cols - gap, ch = 18;
+  const { s } = svgIn('ch-hours', 7 * (ch + gap) + 20);
+  const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  HOURS.forEach((row, r) => {
+    el('text', { x: 0, y: r * (ch + gap) + ch - 4, class: 'tick', text: names[r] }, s);
+    row.forEach((v, c) => {
+      const node = el('rect', { x: lw + c * (cw + gap), y: r * (ch + gap), width: cw, height: ch, rx: 3, style: `fill:${seqColor(v, [6, 16, 31, 46])}` }, s);
+      hover(node, () => `<div class="t">${names[r]} ${String(c + 6).padStart(2, '0')}:00–${String(c + 7).padStart(2, '0')}:00</div>` + tipRow('Avg active prep', v + ' min'));
+    });
+  });
+  for (let c = 0; c < cols; c += 3) el('text', { x: lw + c * (cw + gap), y: 7 * (ch + gap) + 14, class: 'tick', text: `${String(c + 6).padStart(2, '0')}:00` }, s);
+}
+
+function render() {
+  renderTiles(); renderTables();
+  drawTimeline(); drawApps(); drawDaily(); drawBurnup(); drawCalendar(); drawTopics(); drawFocus(); drawHours();
+  drawColumns('ch-switch', DAYS.map(d => d.date.getDate()), DAYS.map(d => d.switches == null ? null : Math.round(d.switches * 10) / 10), {
+    yMax: 10, step: 2, fmtAxis: v => v, color: () => 'var(--c1)', showLabel: i => i % 2 === 1 || i === TODAY, strong: i => i === TODAY,
+    tip: i => `<div class="t">${fmtDate(DAYS[i].date)}</div>` + (DAYS[i].switches == null ? 'No session' : tipRow('Switches per hour', DAYS[i].switches.toFixed(1), 'var(--c1)'))
+  });
+  drawColumns('ch-idle', IDLE_BUCKETS.map(b => b[0]), IDLE_BUCKETS.map(b => b[1]), {
+    yMax: 25, step: 5, fmtAxis: v => v, color: () => 'var(--distract)', showLabel: () => true, capLabels: true,
+    tip: i => `<div class="t">Pauses of ${IDLE_BUCKETS[i][0]}</div>` + tipRow('Count', IDLE_BUCKETS[i][1])
+  });
+}
+render();
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+});
+</script>
+</body>
+</html>
