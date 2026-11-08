@@ -1,0 +1,4 @@
+#!/bin/sh
+# PrepPulse branch policy: merges into dev and main happen in pull requests on GitHub, not locally.
+# Same rule as pre-commit. (A fast-forward "git pull" on dev is fine: it makes no merge commit.)
+exec "$(dirname "$0")/pre-commit"

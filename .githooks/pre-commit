@@ -1,0 +1,13 @@
+#!/bin/sh
+# PrepPulse branch policy (CONTRIBUTING.md): dev and main only change through pull requests,
+# so nothing is committed on them directly. Work on a feature branch instead.
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null)
+case "$branch" in
+  dev|main)
+    echo "PrepPulse policy: don't commit directly on '$branch'." >&2
+    echo "  Move your work to a feature branch:  git switch -c feature/<name>" >&2
+    echo "  then commit, push it, and open a pull request into dev. See CONTRIBUTING.md." >&2
+    exit 1
+    ;;
+esac
+exit 0
