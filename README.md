@@ -9,10 +9,11 @@ A Windows background tracker for interview prep. Start a session, and PrepPulse 
 Two parts sharing one capture engine and database:
 
 **A. Current session — live focus tracking**
-- **Sessions** with a start and stop time (tray, taskbar or hotkey), auto-paused when you lock the PC.
-- **Focus tracking**: the foreground app and window title, grouped into categories (coding practice, system design, AI/ML study, mock & behavioral, distraction) by simple rules.
+- **Sessions** with a start and stop time (tray, taskbar or hotkey). Locking pauses a session; sleep, restart or shutdown ends it.
+- **Your lists**: a focus list (apps and websites where your attention should be, each tagged coding, system design, AI/ML or mock & behavioral) and a distraction list. Anything on neither list is "other".
+- **Focus tracking**: the app or website in focus (websites by domain only), plus every app open during the session.
 - **Tray and taskbar**: an icon in the notification area by the clock shows today's progress and your focus state; while a session runs, the taskbar button's progress bar fills toward today's target and turns green / yellow / red.
-- **Idle detection and alerts**: gaps of 2+ minutes with no input are recorded. When focus is lost for a configurable time (default 5 minutes), the tray icon and taskbar button flash, a beep plays, and a toast offers Back to it / Break / End session — each can be switched off.
+- **Idle detection and alerts**: gaps of 2+ minutes with no input are recorded. When focus is lost — no input for 5 minutes, a distraction for 2, or an unlisted app for 5 (all configurable) — the tray icon and taskbar button flash, a beep plays, and a toast offers Back to it / Break / End session — each can be switched off.
 
 **B. Overall progress**
 - **Dashboard**: daily progress vs target, a burn-up to interview day, focus ratio and more.

@@ -173,6 +173,30 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
 .flash { animation: flash 1.4s ease-in-out infinite; }
 @keyframes flash { 50% { background: rgba(208,59,59,.6); } }
 @media (prefers-reduced-motion: reduce) { .flash { animation: none; background: rgba(208,59,59,.6); } }
+/* lists editor */
+.lists { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 760px) { .lists { grid-template-columns: 1fr; } }
+.list-col { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--page); min-width: 0; }
+.list-head { display: flex; align-items: center; gap: 4px; font-size: 14px; margin-bottom: 6px; }
+.list-head .cnt { margin-left: auto; font-size: 12px; color: var(--muted); }
+ul.entries { list-style: none; margin: 0; padding: 0; }
+ul.entries li { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 0; border-top: 1px solid var(--grid); font-size: 13px; }
+.kind { font-size: 11px; color: var(--muted); width: 28px; flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink2); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; }
+.chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.flag { font-size: 12px; color: var(--muted); }
+.neither { margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--axis); font-size: 13px; color: var(--ink2); }
+.neither p { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.addbar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.addbar input[type=text] { flex: 1 1 260px; }
+.addbar input, .addbar select, .neither select { font: inherit; font-size: 13px; color: var(--ink); background: var(--page); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+.seen { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; font-size: 13px; color: var(--ink2); }
+.seen-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px dashed var(--axis); border-radius: 8px; padding: 3px 6px 3px 8px; }
+/* open-vs-focus bar */
+.ob { position: relative; display: block; height: 8px; border-radius: 4px; background: transparent; }
+.ob i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+.ob-open { background: var(--s1); }
+.ob-focus { background: var(--c1); }
 /* toast mock */
 .toast { border: 1px solid var(--border); border-radius: 10px; background: var(--page); padding: 12px 14px; box-shadow: 0 6px 22px rgba(0,0,0,.10); }
 .toast + .toast { margin-top: 12px; }
@@ -197,7 +221,7 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
     <span class="part-tag">A</span>
     <div>
       <h2 class="pt">Current session — live focus tracking</h2>
-      <p>What you see while studying: start/stop, what has focus right now, idle detection, and an alert after 5 minutes off-task. Lives in the taskbar and tray; never needs the dashboard open.</p>
+      <p>What you see while studying: start/stop, what has focus right now, every app open during the session, idle detection, and alerts when focus is lost. Driven by your focus and distraction lists. Lives in the taskbar and tray; never needs the dashboard open. A session ends when you stop it, or when the PC sleeps, restarts or shuts down.</p>
     </div>
   </div>
   <div class="grid">
@@ -229,11 +253,11 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
         </div>
         <div class="tb-cell alerting" style="--state:var(--crit)">
           <div class="screen edge">
-            <div class="tip-bubble">5:02 off-task in WhatsApp<br>Last prep: LeetCode · 3Sum</div>
+            <div class="tip-bubble">2:04 on WhatsApp (distraction)<br>Last focus: leetcode.com · 3Sum</div>
             <div class="taskbar">
               <span class="tb-btn"><span class="g"></span></span><span class="tb-btn"><span class="g"></span></span>
               <span class="tb-btn pp flash"><span class="pp-logo">P</span><span class="prog"><i style="width:77%"></i></span></span>
-              <span class="tray-area"><svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 6.5 5 3.5 8 6.5" fill="none" stroke="#ddd" stroke-width="1.3"/></svg><span class="tray-ring" title="PrepPulse tray icon"></span><span class="clk">10:25 AM<br>8/11/2026</span></span>
+              <span class="tray-area"><svg class="chev" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 6.5 5 3.5 8 6.5" fill="none" stroke="#ddd" stroke-width="1.3"/></svg><span class="tray-ring" title="PrepPulse tray icon"></span><span class="clk">10:22 AM<br>8/11/2026</span></span>
             </div>
           </div>
           <div class="state-label"><span class="ico" style="color:var(--crit)">▲</span><b>Focus lost</b> — tray icon, taskbar button and (optional) screen edge flash red; beep plays</div>
@@ -258,26 +282,75 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
       <p class="note"><b>Windows 11 tip:</b> new tray icons start hidden behind the ^ overflow, and apps can't pin themselves. On first run PrepPulse shows a one-time tip and opens Settings › Personalization › Taskbar › Other system tray icons so you can switch it on (or drag the icon out of the overflow).</p>
     </section>
 
+
+    <section class="card span2">
+      <div class="card-head"><h3>Focus list &amp; distraction list</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>You decide</b> where focus should be and what counts as a distraction — apps by program name, websites by domain. Anything on neither list is "other". <b>Drives:</b> prep time, alerts and every chart.</p>
+      <div class="lists">
+        <div class="list-col">
+          <div class="list-head"><span class="ico" style="color:var(--good)">●</span><b>Focus here</b><span class="cnt">10</span></div>
+          <ul class="entries">
+            <li><span class="kind">App</span><code>Code.exe</code><span class="chip"><i style="background:var(--c1)"></i>Coding</span></li>
+            <li><span class="kind">App</span><code>devenv.exe</code><span class="chip"><i style="background:var(--c1)"></i>Coding</span></li>
+            <li><span class="kind">Site</span><code>leetcode.com</code><span class="chip"><i style="background:var(--c1)"></i>Coding</span></li>
+            <li><span class="kind">Site</span><code>neetcode.io</code><span class="chip"><i style="background:var(--c1)"></i>Coding</span></li>
+            <li><span class="kind">Site</span><code>bytebytego.com</code><span class="chip"><i style="background:var(--c2)"></i>System design</span></li>
+            <li><span class="kind">Site</span><code>excalidraw.com</code><span class="chip"><i style="background:var(--c2)"></i>System design</span></li>
+            <li><span class="kind">Site</span><code>arxiv.org</code><span class="chip"><i style="background:var(--c3)"></i>AI / ML</span></li>
+            <li><span class="kind">App</span><code>Obsidian.exe</code><span class="chip"><i style="background:var(--c3)"></i>AI / ML</span><span class="flag">title has "STAR" → Mock</span></li>
+            <li><span class="kind">Site</span><code>localhost:3000</code><span class="chip"><i style="background:var(--c4)"></i>Mock</span><span class="flag">Loop Prep</span></li>
+            <li><span class="kind">Site</span><code>youtube.com</code><span class="chip"><i style="background:var(--c3)"></i>AI / ML</span><span class="flag">title has "LLM" · passive OK</span></li>
+          </ul>
+        </div>
+        <div class="list-col">
+          <div class="list-head"><span class="ico" style="color:var(--crit)">▲</span><b>Distractions</b><span class="cnt">6</span></div>
+          <ul class="entries">
+            <li><span class="kind">App</span><code>WhatsApp.exe</code></li>
+            <li><span class="kind">App</span><code>Discord.exe</code></li>
+            <li><span class="kind">Site</span><code>reddit.com</code></li>
+            <li><span class="kind">Site</span><code>x.com</code></li>
+            <li><span class="kind">Site</span><code>instagram.com</code></li>
+            <li><span class="kind">Site</span><code>youtube.com</code><span class="flag">any other video</span></li>
+          </ul>
+          <div class="neither">
+            <div class="list-head"><span class="ico" style="color:var(--muted)">○</span><b>On neither list</b></div>
+            <p>Outlook, File Explorer, a new app… <select aria-label="Apps on neither list"><option>Count as lost focus after 5 min</option><option>Ignore — never alert</option></select></p>
+          </div>
+        </div>
+      </div>
+      <div class="addbar">
+        <input type="text" placeholder="Add an app (Notion.exe) or a website (neetcode.io)" aria-label="App or website to add">
+        <select aria-label="List"><option>Focus here</option><option>Distraction</option></select>
+        <button class="btn primary" type="button">Add</button>
+        <button class="btn" type="button">Pick from running apps…</button>
+      </div>
+      <div class="seen"><span class="seen-label">Seen this session, not on a list:</span>
+        <span class="seen-chip"><code>OUTLOOK.EXE</code><button class="btn tiny" type="button">+ Focus</button><button class="btn tiny" type="button">+ Distraction</button></span>
+        <span class="seen-chip"><code>Spotify.exe</code><button class="btn tiny" type="button">+ Focus</button><button class="btn tiny" type="button">+ Distraction</button></span>
+      </div>
+      <p class="note">The most specific entry wins: <code>youtube.com</code> with "LLM" in the title counts as focus, any other YouTube page as a distraction. Websites are read from the browser's address bar and stored as the domain only; private/incognito windows are recorded as "Private browsing".</p>
+    </section>
+
     <section class="card">
       <div class="card-head"><h3>Focus-lost alert</h3><span class="badge mvp">MVP</span></div>
-      <p class="meta"><b>Fires when</b>, during a session, focus has been lost for the configured time (default 5 min): no keyboard or mouse input, or that long in a distraction or uncategorised app. <b>Built from:</b> idle gaps, focus segments.</p>
+      <p class="meta"><b>Fires when</b>, during a session: no keyboard or mouse input for 5 min, a <b>distraction</b> in focus for 2 min, or an app or site on <b>neither list</b> for 5 min. Each threshold is configurable. <b>Built from:</b> idle gaps, focus segments, your lists.</p>
       <div class="toast">
         <div class="toast-head"><span class="pp-logo sm">P</span>PrepPulse · now</div>
-        <b>5 minutes off-task</b>
-        <p>You've been in WhatsApp since 10:20. Last prep: LeetCode · 15. 3Sum.</p>
+        <b>2 minutes on a distraction</b>
+        <p>WhatsApp is on your distraction list (since 10:20). Last focus: leetcode.com · 15. 3Sum.</p>
         <div class="btns"><button class="btn primary" type="button">Back to it</button><button class="btn" type="button">Break 10 min</button><button class="btn" type="button">End session</button></div>
       </div>
       <div class="toast">
         <div class="toast-head"><span class="pp-logo sm">P</span>PrepPulse · now</div>
         <b>No input for 5 minutes</b>
-        <p>Still with it? Last prep: Chrome · arXiv (15:20).</p>
+        <p>Still with it? Last focus: arxiv.org (15:20).</p>
         <div class="btns"><button class="btn primary" type="button">I'm reading</button><button class="btn" type="button">Break 10 min</button><button class="btn" type="button">End session</button></div>
       </div>
       <ul class="plain">
         <li>One alert per gap; no repeats until you're back on task.</li>
         <li>"Break" snoozes alerts and pings when the break ends.</li>
-        <li>"I'm reading" marks the gap as prep. Video and PDF apps on the passive list don't trigger the no-input alert.</li>
-        <li>No alerts while the PC is locked or asleep — the session pauses instead.</li>
+        <li>"I'm reading" marks the gap as prep. Focus-list entries marked "passive OK" (videos, PDFs) don't trigger the no-input alert.</li>
+        <li>No alerts while the PC is locked (the session pauses). Sleep, restart or shutdown ends the session.</li>
         <li>If Windows Do Not Disturb hides the toast, the tray icon and taskbar still flash and the beep (if on) still plays.</li>
       </ul>
     </section>
@@ -286,11 +359,11 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
       <div class="card-head"><h3>Alert settings</h3><span class="badge mvp">MVP</span></div>
       <p class="meta"><b>Configurable:</b> how long focus can be lost before PrepPulse reacts, and how it gets your attention. The controls work in this mockup but don't save. Stored in <code>appsettings.json</code>.</p>
       <div class="settings">
-        <div class="set-row"><span>Alert when focus is lost for</span><span><input type="number" value="5" min="1" max="60" aria-label="Alert threshold in minutes"> min</span></div>
         <div class="set-row"><span>Count as idle after no input for</span><span><input type="number" value="2" min="1" max="30" aria-label="Idle threshold in minutes"> min</span></div>
-        <div class="set-group">Focus counts as lost when</div>
-        <label><input type="checkbox" checked>No keyboard or mouse input</label>
-        <label><input type="checkbox" checked>A distracting or uncategorised app has focus</label>
+        <div class="set-group">Alert when</div>
+        <div class="set-row"><label><input type="checkbox" checked>No keyboard or mouse input for</label><span><input type="number" value="5" min="1" max="60" aria-label="No-input alert minutes"> min</span></div>
+        <div class="set-row"><label><input type="checkbox" checked>A distraction is in focus for</label><span><input type="number" value="2" min="1" max="60" aria-label="Distraction alert minutes"> min</span></div>
+        <div class="set-row"><label><input type="checkbox" checked>Something on neither list is in focus for</label><span><input type="number" value="5" min="1" max="60" aria-label="Neither-list alert minutes"> min</span></div>
         <div class="set-group">Flash</div>
         <label><input type="checkbox" checked>Tray icon by the clock</label>
         <label><input type="checkbox" checked>Taskbar button</label>
@@ -301,8 +374,14 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
         <label><input type="checkbox">Beep only for distracting apps, not for no input</label>
         <div class="set-group">Notification</div>
         <label><input type="checkbox" checked>Show a toast with Back to it · Break · End session</label>
+        <label><input type="checkbox" checked>At session start, remind me if distractions are already open</label>
+        <div class="set-group">Session ends when</div>
+        <label><input type="checkbox" checked disabled>The PC sleeps or hibernates (always)</label>
+        <label><input type="checkbox" checked disabled>The PC restarts, shuts down or signs out (always)</label>
+        <div class="set-row"><label><input type="checkbox" checked>The PC stays locked for more than</label><span><input type="number" value="30" min="5" max="240" aria-label="Lock timeout minutes"> min</span></div>
+        <p class="hint" style="margin:0">A shorter lock just pauses the session.</p>
       </div>
-      <p class="note">Escalation: at the threshold → toast + flash + one beep. Still off-task → beep again every 2 min, up to 3 times, then keep flashing silently until you're back.</p>
+      <p class="note">Escalation: at a threshold → toast + flash + one beep. Still off-task → beep again every 2 min, up to 3 times, then keep flashing silently until you're back.</p>
     </section>
 
     <section class="card">
@@ -321,7 +400,7 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
         </div>
         <div class="flyout" aria-label="Return prompt mockup">
           <b>Welcome back — no input for 24 min</b>
-          <p class="hint" style="margin-top:4px">15:20 – 15:44 · last app: Chrome · arXiv</p>
+          <p class="hint" style="margin-top:4px">15:20 – 15:44 · last focus: arxiv.org</p>
           <div class="btns">
             <button class="btn" type="button">Break</button>
             <button class="btn" type="button">Reading / watching</button>
@@ -335,7 +414,7 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
 
     <section class="card">
       <div class="card-head"><h3>Where today's time went</h3><span class="badge mvp">MVP</span></div>
-      <p class="meta"><b>Answers:</b> which apps and sites actually got my time? <b>Built from:</b> focus segments grouped by app + title rule.</p>
+      <p class="meta"><b>Answers:</b> which apps and sites actually got my time? <b>Built from:</b> focus segments grouped by app or website.</p>
       <div class="chart" id="ch-apps"></div>
     </section>
 
@@ -347,6 +426,15 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
       <div class="scroll"><table id="sessTable"></table></div>
     </section>
 
+
+
+    <section class="card span2">
+      <div class="card-head"><h3>Apps open during the session</h3><span class="badge mvp">MVP</span></div>
+      <p class="meta"><b>Answers:</b> what else was running while I studied, and what sat open in the background? Every app with a visible window is recorded, not just the one in focus. Bar = time open; dark part = time in focus. <b>Built from:</b> open-app snapshots every 30 s, focus segments, your lists.</p>
+      <p class="hint" style="margin:0 0 4px">Session 1 · 09:05–11:40 · ended with Stop</p>
+      <div class="scroll"><table id="openApps"></table></div>
+      <p class="note">▲ marks a distraction that was open but not in focus — a candidate for closing before the next session.</p>
+    </section>
 
     <section class="card span2">
       <div class="card-head"><h3>Focus-lost alerts today</h3><span class="badge">Later</span></div>
@@ -439,6 +527,8 @@ code { font: 12px ui-monospace, "Cascadia Code", Consolas, monospace; background
         <tr><td>Plan pace</td><td style="text-align:left">cumulative actual ÷ cumulative planned to date; projection = 7-day average × days left</td><td style="text-align:left">Burn-up, tiles</td></tr>
         <tr><td>Focus-lost alerts</td><td style="text-align:left">alerts fired per session, split by trigger (no input / off-task app)</td><td style="text-align:left">Timeline, alerts table, taskbar</td></tr>
         <tr><td>Time to refocus</td><td style="text-align:left">alert → next input in a prep-category app</td><td style="text-align:left">Alerts table</td></tr>
+        <tr><td>Background distractions</td><td style="text-align:left">distraction-list apps open but not in focus during a session, and for how long</td><td style="text-align:left">Apps open during the session</td></tr>
+        <tr><td>Session end reason</td><td style="text-align:left">stop · sleep/hibernate · restart/shutdown · locked too long · unexpected (crash or power loss)</td><td style="text-align:left">Session table</td></tr>
         <tr><td>Topic hours</td><td style="text-align:left">active prep tagged per topic vs topic plan</td><td style="text-align:left">Topic coverage</td></tr>
       </tbody>
     </table></div>
@@ -518,36 +608,47 @@ const fmtShort = d => `${d.getDate()} ${d.toLocaleString('en-AU', { month: 'shor
 // Today's focus segments: start, end, category, app, window title, group label
 const SEGS = [
   ['09:05', '09:32', 'coding', 'VS Code', 'two-pointers.cs — kata', 'VS Code'],
-  ['09:32', '09:51', 'coding', 'Chrome', 'LeetCode · 15. 3Sum', 'Chrome · LeetCode'],
+  ['09:32', '09:51', 'coding', 'Chrome', 'LeetCode · 15. 3Sum', 'leetcode.com'],
   ['09:51', '09:58', 'idle', '—', 'No keyboard or mouse input', ''],
-  ['09:58', '10:20', 'coding', 'Chrome', 'LeetCode · 11. Container With Most Water', 'Chrome · LeetCode'],
+  ['09:58', '10:20', 'coding', 'Chrome', 'LeetCode · 11. Container With Most Water', 'leetcode.com'],
   ['10:20', '10:26', 'distract', 'WhatsApp', 'Chats', 'WhatsApp'],
-  ['10:26', '11:05', 'design', 'Chrome', 'ByteByteGo · Design a rate limiter', 'Chrome · ByteByteGo'],
+  ['10:26', '11:05', 'design', 'Chrome', 'ByteByteGo · Design a rate limiter', 'bytebytego.com'],
   ['11:05', '11:14', 'idle', '—', 'No keyboard or mouse input', ''],
-  ['11:14', '11:40', 'design', 'Chrome', 'Excalidraw · rate-limiter sketch', 'Chrome · Excalidraw'],
-  ['14:10', '14:48', 'ai', 'Obsidian', 'RAG evaluation notes', 'Obsidian · RAG notes'],
-  ['14:48', '15:20', 'ai', 'Chrome', 'arXiv · retrieval-augmented generation', 'Chrome · arXiv'],
+  ['11:14', '11:40', 'design', 'Chrome', 'Excalidraw · rate-limiter sketch', 'excalidraw.com'],
+  ['14:10', '14:48', 'ai', 'Obsidian', 'RAG evaluation notes', 'Obsidian'],
+  ['14:48', '15:20', 'ai', 'Chrome', 'arXiv · retrieval-augmented generation', 'arxiv.org'],
   ['15:20', '15:44', 'idle', '—', 'Marked "Break" on return', ''],
-  ['15:44', '16:00', 'ai', 'Edge', 'YouTube · LLM serving at scale (passive)', 'Edge · YouTube'],
+  ['15:44', '16:00', 'ai', 'Edge', 'YouTube · LLM serving at scale (passive)', 'youtube.com · LLM talk'],
   ['16:00', '16:25', 'coding', 'VS Code', 'graph-bfs.cs — kata', 'VS Code'],
-  ['20:30', '21:15', 'mock', 'Chrome', 'Loop Prep · Mock system design round', 'Loop Prep (localhost)'],
-  ['21:15', '21:21', 'distract', 'Chrome', 'Reddit', 'Chrome · Reddit'],
-  ['21:21', '21:45', 'mock', 'Obsidian', 'STAR stories', 'Obsidian · STAR stories'],
+  ['20:30', '21:15', 'mock', 'Chrome', 'Loop Prep · Mock system design round', 'Loop Prep (localhost:3000)'],
+  ['21:15', '21:21', 'distract', 'Chrome', 'Reddit', 'reddit.com'],
+  ['21:21', '21:45', 'mock', 'Obsidian', 'STAR stories', 'Obsidian · STAR'],
 ].map(([a, b, cat, app, title, group]) => ({ s: toMin(a), e: toMin(b), cat, app, title, group, d: toMin(b) - toMin(a) }));
-const SESSIONS = [['09:05', '11:40'], ['14:10', '16:25'], ['20:30', '21:45']].map(([a, b], i) => {
+const SESSIONS = [['09:05', '11:40', 'Stop'], ['14:10', '16:25', 'PC went to sleep'], ['20:30', '21:45', 'Stop']].map(([a, b, why], i) => {
   const s = toMin(a), e = toMin(b), segs = SEGS.filter(x => x.s >= s && x.e <= e);
   const sum = k => segs.filter(x => k(x.cat)).reduce((t, x) => t + x.d, 0);
   const active = sum(c => !!CATS.find(k => k.key === c));
-  return { n: i + 1, s, e, len: e - s, active, idle: sum(c => c === 'idle'), distract: sum(c => c === 'distract'), gaps: segs.filter(x => x.cat === 'idle').length };
+  return { n: i + 1, s, e, why, len: e - s, active, idle: sum(c => c === 'idle'), distract: sum(c => c === 'distract'), gaps: segs.filter(x => x.cat === 'idle').length };
 });
 
 const ALERTS = [ // at, trigger, gap started, app, response, back on task
-  ['09:56', 'No input', '09:51', 'Chrome · LeetCode', 'Back to it', '09:58'],
-  ['10:25', 'Off-task app', '10:20', 'WhatsApp', 'Back to it', '10:26'],
-  ['11:10', 'No input', '11:05', 'Chrome · ByteByteGo', 'Ignored', '11:14'],
-  ['15:25', 'No input', '15:20', 'Chrome · arXiv', 'Break 10 min', '15:44'],
-  ['21:20', 'Off-task app', '21:15', 'Chrome · Reddit', 'Back to it', '21:21'],
+  ['09:56', 'No input', '09:51', 'leetcode.com', 'Back to it', '09:58'],
+  ['10:22', 'Distraction', '10:20', 'WhatsApp', 'Back to it', '10:26'],
+  ['11:10', 'No input', '11:05', 'bytebytego.com', 'Ignored', '11:14'],
+  ['15:25', 'No input', '15:20', 'arxiv.org', 'Break 10 min', '15:44'],
+  ['21:17', 'Distraction', '21:15', 'reddit.com', 'Back to it', '21:21'],
 ].map(([at, kind, since, app, resp, back]) => ({ at: toMin(at), kind, since: toMin(since), app, resp, back: toMin(back) }));
+const OPEN_APPS = [ // name, kind, list, category, open min, focus min, note, indent
+  ['Chrome', 'App', '', '', 155, 106, '3 focus sites, 0 distractions', false],
+  ['leetcode.com', 'Site', 'focus', 'Coding', null, 41, '', true],
+  ['bytebytego.com', 'Site', 'focus', 'System design', null, 39, '', true],
+  ['excalidraw.com', 'Site', 'focus', 'System design', null, 26, '', true],
+  ['VS Code (Code.exe)', 'App', 'focus', 'Coding', 155, 27, '', false],
+  ['WhatsApp', 'App', 'distraction', '', 155, 6, 'open the whole session', false],
+  ['Outlook', 'App', 'neither', '', 155, 0, '', false],
+  ['Spotify', 'App', 'neither', '', 70, 0, '', false],
+  ['Discord', 'App', 'distraction', '', 40, 0, 'opened 10:40, never focused', false],
+];
 const TOTALS = [95, 130, 70, 125, 40, 210, 260, 110, 140, 0, 120, 85, 230, null];
 const DAYS = TOTALS.map((t, i) => {
   const by = {};
@@ -626,12 +727,20 @@ function renderTiles() {
 }
 
 function renderTables() {
-  document.getElementById('sessTable').innerHTML = `<thead><tr><th>Session</th><th>Start</th><th>Stop</th><th>Length</th><th>Active prep</th><th>Idle</th><th>Distraction</th><th>Focus</th></tr></thead><tbody>` +
-    SESSIONS.map(x => `<tr><td>Session ${x.n}</td><td>${clock(x.s)}</td><td>${clock(x.e)}</td><td>${fmtMin(x.len)}</td><td>${fmtMin(x.active)}</td><td>${x.idle ? fmtMin(x.idle) + ` (${x.gaps})` : '–'}</td><td>${x.distract ? fmtMin(x.distract) : '–'}</td><td>${Math.round(x.active / x.len * 100)}%</td></tr>`).join('') + '</tbody>';
+  document.getElementById('sessTable').innerHTML = `<thead><tr><th>Session</th><th>Start</th><th>Stop</th><th>Length</th><th>Active prep</th><th>Idle</th><th>Distraction</th><th>Focus</th><th style="text-align:left">Ended by</th></tr></thead><tbody>` +
+    SESSIONS.map(x => `<tr><td>Session ${x.n}</td><td>${clock(x.s)}</td><td>${clock(x.e)}</td><td>${fmtMin(x.len)}</td><td>${fmtMin(x.active)}</td><td>${x.idle ? fmtMin(x.idle) + ` (${x.gaps})` : '–'}</td><td>${x.distract ? fmtMin(x.distract) : '–'}</td><td>${Math.round(x.active / x.len * 100)}%</td><td style="text-align:left;white-space:nowrap;min-width:0">${x.why}</td></tr>`).join('') + '</tbody>';
   document.getElementById('alertTable').innerHTML = `<thead><tr><th>Time</th><th style="text-align:left">Trigger</th><th style="text-align:left">App</th><th style="text-align:left">Response</th><th>Back after</th></tr></thead><tbody>` +
     ALERTS.map(a => `<tr><td>${clock(a.at)}</td><td style="text-align:left;white-space:nowrap;min-width:0">${a.kind}</td><td style="text-align:left;white-space:nowrap;min-width:0">${a.app}</td><td style="text-align:left;white-space:nowrap;min-width:0">${a.resp}</td><td>${fmtMin(a.back - a.at)}</td></tr>`).join('') + '</tbody>';
   const quick = ALERTS.filter(a => a.resp !== 'Break 10 min').map(a => a.back - a.at);
   document.getElementById('alertNote').textContent = `${ALERTS.length} alerts today. Average time back on task (excluding breaks): ${Math.round(quick.reduce((p, q) => p + q, 0) / quick.length)} min.`;
+  const listLabel = { focus: '<span class="ico" style="color:var(--good)">●</span>Focus', distraction: '<span class="ico" style="color:var(--crit)">▲</span>Distraction', neither: '<span class="ico" style="color:var(--muted)">○</span>Neither', '': '<span class="ico" style="color:var(--muted)">–</span>Mixed' };
+  document.getElementById('openApps').innerHTML = `<thead><tr><th>App / site</th><th style="text-align:left">List</th><th style="text-align:left">Open vs in focus</th><th>Open</th><th>In focus</th><th style="text-align:left">Note</th></tr></thead><tbody>` +
+    OPEN_APPS.map(([name, kind, list, cat, open, focus, note, sub]) => {
+      const base = open || 155;
+      const bar = `<span class="ob"><i class="ob-open" style="width:${open ? open / 155 * 100 : 0}%"></i><i class="ob-focus" style="width:${focus / 155 * 100}%"></i></span>`;
+      const warn = list === 'distraction' && focus < 10 ? '<span class="ico" style="color:var(--crit)">▲</span>' : '';
+      return `<tr><td style="${sub ? 'padding-left:24px;color:var(--ink2)' : ''}">${name}</td><td style="text-align:left;white-space:nowrap;min-width:0">${listLabel[list]}${cat ? ' · ' + cat : ''}</td><td style="text-align:left;min-width:160px">${bar}</td><td>${open ? fmtMin(open) : '–'}</td><td>${focus ? fmtMin(focus) : '–'}</td><td style="text-align:left;white-space:nowrap;min-width:0">${warn}${note}</td></tr>`;
+    }).join('') + '</tbody>';
   document.getElementById('dailyTable').innerHTML = `<thead><tr><th>Day</th>${CATS.map(c => `<th>${c.name}</th>`).join('')}<th>Total</th><th>Target</th><th>%</th></tr></thead><tbody>` +
     DAYS.map(d => `<tr><td>${fmtDate(d.date)}</td>${CATS.map(c => `<td>${d.by[c.key] ? fmtMin(d.by[c.key]) : '–'}</td>`).join('')}<td>${d.total ? fmtMin(d.total) : '–'}</td><td>${fmtMin(d.target)}</td><td>${Math.round(d.total / d.target * 100)}%</td></tr>`).join('') + '</tbody>';
 }
