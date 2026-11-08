@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PrepPulse.Core/PrepPulse.Core.csproj" />
+    <Project Path="src/PrepPulse.Data/PrepPulse.Data.csproj" />
+    <Project Path="src/PrepPulse.App/PrepPulse.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PrepPulse.Tests/PrepPulse.Tests.csproj" />
+  </Folder>
+</Solution>

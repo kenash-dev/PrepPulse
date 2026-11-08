@@ -12,7 +12,8 @@ topics:
   - name: Transformers from scratch
     category: ai
     hours: 15
-    focus: ["youtube.com | Karpathy", "github.com | nanoGPT", Code.exe]
+    focus: ["github.com | nanoGPT", Code.exe]
+    passive: ["youtube.com | Karpathy"]
 
   - name: Fine-tuning and LoRA
     category: ai

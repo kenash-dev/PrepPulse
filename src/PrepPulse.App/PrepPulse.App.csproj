@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- WPF and WinForms share type names (Application, Button, Color...), so usings are explicit in this project. -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>PrepPulse</AssemblyName>
+    <RootNamespace>PrepPulse.App</RootNamespace>
+    <StartupObject>PrepPulse.App.Program</StartupObject>
+    <Product>PrepPulse</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Kestrel + Generic Host for the local dashboard, background services and DI. Part of the shared framework, no NuGet. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PrepPulse.Core\PrepPulse.Core.csproj" />
+    <ProjectReference Include="..\PrepPulse.Data\PrepPulse.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\web\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\docs\examples\plans\*.yaml" Link="seed\plans\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

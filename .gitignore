@@ -1,4 +1,5 @@
 # Build output
+.artifacts/
 bin/
 obj/
 out/

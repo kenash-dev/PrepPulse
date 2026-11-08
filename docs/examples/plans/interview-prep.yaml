@@ -16,6 +16,9 @@ targets:                       # expected study time
 
 # Each topic says how many hours it should get, in which weeks,
 # and which apps/sites count as studying it (this builds the plan's focus list).
+#   focus:   apps and sites you actively work in
+#   passive: things you watch or read — no keyboard/mouse input there still counts as study
+# Apps by program name (Code.exe), websites by domain (leetcode.com also covers its subdomains).
 # "site | words" narrows a site to pages whose title contains those words.
 topics:
   - name: Arrays, strings & hashing
@@ -40,13 +43,15 @@ topics:
     category: design
     hours: 24
     weeks: 1-8
-    focus: [bytebytego.com, excalidraw.com, "youtube.com | system design"]
+    focus: [bytebytego.com, excalidraw.com]
+    passive: ["youtube.com | system design"]
 
   - name: LLM apps — RAG, evals, serving
     category: ai
     hours: 26
     weeks: 1-8
-    focus: [arxiv.org, Obsidian.exe, "youtube.com | LLM"]
+    focus: [arxiv.org, Obsidian.exe]
+    passive: ["youtube.com | LLM"]
 
   - name: Behavioral (STAR)
     category: mock
@@ -58,7 +63,7 @@ topics:
     category: mock
     hours: 20
     weeks: 4-8
-    focus: [localhost:3000]    # Loop Prep
+    focus: ["localhost:3000"]  # Loop Prep
 
 # Optional week-by-week checklist; tick items off in the dashboard.
 weeks:
@@ -68,7 +73,7 @@ weeks:
     - Build semantic search from scratch
   2:
     - BFS and DFS — 5 problems
-    - Timed design: rate limiter (45 min)
+    - "Timed design: rate limiter (45 min)"
   3:
     - Hashing and prefix sums — 6 problems
     - Build a 30-example eval set

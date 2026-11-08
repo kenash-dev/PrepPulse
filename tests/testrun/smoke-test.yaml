@@ -1,0 +1,17 @@
+# Plan used by tests\testrun\testrun.cmd: Notepad counts as studying, Paint is a distraction.
+name: Smoke test
+colour: violet
+start: 2026-11-01
+targets:
+  weekdays: 30m
+  weekends: 30m
+topics:
+  - name: Writing notes
+    category: coding
+    hours: 2
+    focus: [notepad.exe]
+  - name: Reading docs
+    category: ai
+    hours: 2
+    focus: [learn.microsoft.com]
+    passive: ["youtube.com | lecture"]

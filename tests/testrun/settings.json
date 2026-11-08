@@ -1,0 +1,21 @@
+{
+  // Test-run settings: everything fast so a full run takes a few minutes.
+  "IdleAfterMinutes": 0.5,
+  "Alerts": {
+    "NoInputMinutes": 1.5,
+    "DistractionMinutes": 0.5,
+    "NeitherListMinutes": 1,
+    "FlashTrayIcon": true,
+    "FlashTaskbar": true,
+    "Popup": true,
+    "Sound": { "Enabled": true, "File": "SystemExclamation", "RepeatEveryMinutes": 0.5, "MaxRepeats": 2, "DistractionsOnly": false },
+    "RemindOpenDistractionsAtStart": true,
+    "SuggestPlanAfterMinutes": 1,
+    "BreakMinutes": 1
+  },
+  "Session": { "EndAfterLockedMinutes": 30 },
+  "DashboardPort": 5318,
+  "Hotkey": "Ctrl+Alt+P",
+  "ShowPickerOnLaunch": true,
+  "SessionWindowMinimized": false
+}

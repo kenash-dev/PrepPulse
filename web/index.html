@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrepPulse Dashboard</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,.10);
+  --coding: #2a78d6; --design: #eb6834; --ai: #1baf7a; --mock: #eda100; --other: #e87ba4;
+  --distraction: #8f8d86; --neither: #cfcdc5; --idle: #e8e6df; --idle-ink: #b3b1a9;
+  --s1: #cde2fb; --s2: #86b6ef; --accent: #2a78d6; --empty: #eceae4;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b; --up: #006300; --down: #b42a2a; --wash: rgba(42,120,214,.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+    --coding: #3987e5; --design: #d95926; --ai: #199e70; --mock: #c98500; --other: #d55181;
+    --distraction: #6f6e68; --neither: #43423e; --idle: #2a2a28; --idle-ink: #4c4b47;
+    --s1: #104281; --s2: #1c5cab; --accent: #3987e5; --empty: #252524;
+    --up: #0ca30c; --down: #e66767; --wash: rgba(57,135,229,.16);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,.10);
+  --coding: #3987e5; --design: #d95926; --ai: #199e70; --mock: #c98500; --other: #d55181;
+  --distraction: #6f6e68; --neither: #43423e; --idle: #2a2a28; --idle-ink: #4c4b47;
+  --s1: #104281; --s2: #1c5cab; --accent: #3987e5; --empty: #252524;
+  --up: #0ca30c; --down: #e66767; --wash: rgba(57,135,229,.16);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 22px 16px 56px; }
+header.top { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; justify-content: space-between; }
+h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 30px 0 12px; font-weight: 600; }
+h3 { font-size: 15px; margin: 0 0 4px; }
+.sub { color: var(--ink2); font-size: 13px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { font: inherit; font-size: 13px; color: var(--ink2); background: transparent; border: 0; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button.on { background: var(--wash); color: var(--ink); font-weight: 600; }
+.seg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+button.ghost { font: inherit; font-size: 13px; color: var(--ink2); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; background: var(--surface); color: var(--ink2); }
+.pill b { color: var(--ink); font-weight: 600; }
+.pill .d { width: 8px; height: 8px; border-radius: 50%; }
+.banner { margin-top: 14px; border: 1px solid var(--border); border-left: 3px solid var(--crit); border-radius: 0; background: var(--surface); padding: 10px 14px; font-size: 13px; color: var(--ink2); }
+.banner b { color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink2); margin-top: 12px; }
+.key { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex: none; }
+.sw.hatch { background: repeating-linear-gradient(45deg, var(--idle-ink) 0 1.5px, var(--idle) 1.5px 5px); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.span2 { grid-column: span 2; }
+@media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } .span2 { grid-column: auto; } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px 14px; min-width: 0; }
+.card .meta { margin: 0 0 10px; font-size: 13px; color: var(--ink2); }
+.empty { color: var(--muted); font-size: 13px; padding: 18px 0; }
+.tiles { display: grid; grid-template-columns: 1.6fr repeat(4, 1fr); gap: 12px; }
+@media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } .tile.hero { grid-column: span 2; } }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.tile .label { font-size: 12px; color: var(--ink2); }
+.tile .value { font-size: 26px; font-weight: 600; margin-top: 2px; letter-spacing: -.01em; }
+.tile.hero .value { font-size: 48px; line-height: 1.05; }
+.tile .note { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.up { color: var(--up); font-weight: 600; } .down { color: var(--down); font-weight: 600; }
+.meter { height: 8px; border-radius: 999px; background: var(--s1); margin-top: 10px; overflow: hidden; }
+.meter > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+td.l, th.l { text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+.scroll { overflow-x: auto; }
+.ob { position: relative; display: block; height: 8px; min-width: 120px; border-radius: 4px; }
+.ob i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+.ob .o { background: var(--s1); } .ob .f { background: var(--accent); }
+.plans { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.plan-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--page); }
+.plan-card .t { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.plan-card .t i { width: 10px; height: 10px; border-radius: 3px; }
+.row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink2); margin-top: 6px; }
+.row b { color: var(--ink); }
+.foot { margin-top: 28px; font-size: 12px; color: var(--muted); }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tick.strong { fill: var(--ink); font-weight: 600; }
+.lbl { fill: var(--ink2); font-size: 12px; }
+.lbl.strong { fill: var(--ink); font-weight: 600; }
+.gl { stroke: var(--grid); stroke-width: 1; } .ax { stroke: var(--axis); stroke-width: 1; }
+.target { stroke: var(--ink2); stroke-width: 2; stroke-linecap: round; }
+.hit { fill: transparent; }
+#tip { position: fixed; z-index: 10; pointer-events: none; min-width: 160px; max-width: 320px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.14); }
+#tip .t { font-weight: 600; margin-bottom: 4px; }
+#tip .r { display: flex; justify-content: space-between; gap: 14px; color: var(--ink2); }
+#tip .r b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>PrepPulse</h1>
+      <div class="sub" id="subtitle">Loading…</div>
+    </div>
+    <div class="controls">
+      <span class="pill" id="live" hidden></span>
+      <div class="seg" id="switcher" role="group" aria-label="Plan shown"></div>
+      <button class="ghost" id="themeBtn" type="button">Dark mode</button>
+    </div>
+  </header>
+  <div id="problems"></div>
+  <div class="legend" id="legend"></div>
+
+  <h2>Today</h2>
+  <div class="tiles" id="tiles"></div>
+  <div class="grid" style="margin-top:16px">
+    <section class="card span2">
+      <h3>Today's sessions</h3>
+      <p class="meta">Start and stop, what had focus, pauses with no input, and when focus-lost alerts fired (▲).</p>
+      <div id="ch-timeline"></div>
+      <div class="scroll"><table id="t-sessions"></table></div>
+    </section>
+    <section class="card">
+      <h3>Where today's time went</h3>
+      <p class="meta">Apps and websites in focus during sessions.</p>
+      <div id="ch-timeuse"></div>
+    </section>
+    <section class="card">
+      <h3>Focus-lost alerts today</h3>
+      <p class="meta">What pulled you away, what you answered, and how fast you got back.</p>
+      <div class="scroll"><table id="t-alerts"></table></div>
+    </section>
+    <section class="card span2">
+      <h3 id="apps-title">Apps open during the last session</h3>
+      <p class="meta">Every app with a window open, not just the one in focus. Light bar = time open, dark = time in focus.</p>
+      <div class="scroll"><table id="t-apps"></table></div>
+    </section>
+  </div>
+
+  <h2>Progress against the plan</h2>
+  <div class="grid">
+    <section class="card span2">
+      <h3>Daily progress vs expected</h3>
+      <p class="meta">Prep time per day by category. The dark tick is that day's target from your plan.</p>
+      <div id="ch-daily"></div>
+    </section>
+    <section class="card span2">
+      <h3 id="trend-title">Cumulative progress</h3>
+      <p class="meta" id="trend-meta"></p>
+      <div id="ch-trend"></div>
+    </section>
+    <section class="card">
+      <h3>Focus ratio by day</h3>
+      <p class="meta">Prep time ÷ session length. The line marks 80%.</p>
+      <div id="ch-focus"></div>
+    </section>
+    <section class="card">
+      <h3>Topics</h3>
+      <p class="meta">Hours done (bar) against where the plan expects you to be today (tick); the track is the topic's full hours.</p>
+      <div id="ch-topics"></div>
+    </section>
+    <section class="card span2">
+      <h3>Your plans</h3>
+      <p class="meta">Plans are the .yaml files in your plans folder (tray menu › Open plans folder).</p>
+      <div class="plans" id="plans"></div>
+    </section>
+  </div>
+  <div class="foot" id="foot"></div>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const KINDS = {
+  coding: ['Coding practice', 'var(--coding)'], design: ['System design', 'var(--design)'], ai: ['AI / ML study', 'var(--ai)'],
+  mock: ['Mock & behavioral', 'var(--mock)'], other: ['Other study', 'var(--other)'], reading: ['Reading / thinking', 'var(--other)'],
+  distraction: ['Distraction', 'var(--distraction)'], neither: ['Not in the plan', 'var(--neither)'],
+  idle: ['No input', 'url(#hatch)'], break: ['Break', 'url(#hatch)'], paused: ['Paused', 'url(#hatch)'], locked: ['PC locked', 'url(#hatch)'],
+};
+const CATS = ['coding', 'design', 'ai', 'mock', 'other'];
+let model = null;
+let selected = readPref('plan') || 'all';
+
+function readPref(k) { try { return localStorage.getItem('pp.' + k); } catch (e) { return null; } }
+function writePref(k, v) { try { localStorage.setItem('pp.' + k, v); } catch (e) { } }
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in (attrs || {})) { if (k === 'text') e.textContent = attrs[k]; else e.setAttribute(k, attrs[k]); }
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function svgIn(id, h) {
+  const host = document.getElementById(id); host.innerHTML = '';
+  const w = Math.max(280, Math.floor(host.clientWidth));
+  const s = el('svg', { width: w, height: h, viewBox: `0 0 ${w} ${h}`, role: 'img' });
+  host.appendChild(s);
+  const defs = el('defs', {}, s);
+  const p = el('pattern', { id: 'hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
+  el('rect', { width: 6, height: 6, style: 'fill:var(--idle)' }, p);
+  el('line', { x1: 0, y1: 0, x2: 0, y2: 6, style: 'stroke:var(--idle-ink);stroke-width:2' }, p);
+  return { s, w, h };
+}
+function empty(id, text) { document.getElementById(id).innerHTML = `<div class="empty">${esc(text)}</div>`; }
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const crisp = v => Math.round(v) + 0.5;
+function topRounded(x, y, w, h, r) { r = Math.min(r, h, w / 2); if (h <= 0) return ''; return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`; }
+function rightRounded(x, y, w, h, r) { r = Math.min(r, w, h / 2); if (w <= 0) return ''; return `M${x},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x}Z`; }
+const rectPath = (x, y, w, h) => h > 0 && w > 0 ? `M${x},${y}h${w}v${h}h${-w}Z` : '';
+function fmtMin(m) { m = Math.round(m || 0); const h = Math.floor(m / 60), r = m % 60; return h ? (r ? `${h}h ${String(r).padStart(2, '0')}m` : `${h}h`) : `${r}m`; }
+const clock = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(Math.floor(m % 60)).padStart(2, '0')}`;
+const day = iso => { const [y, mo, d] = iso.split('-').map(Number); return new Date(y, mo - 1, d); };
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const fmtDate = iso => { const d = day(iso); return `${WD[d.getDay()]} ${d.getDate()} ${d.toLocaleString('en-AU', { month: 'short' })}`; };
+const fmtShort = iso => { const d = day(iso); return `${d.getDate()} ${d.toLocaleString('en-AU', { month: 'short' })}`; };
+
+const tip = document.getElementById('tip');
+function showTip(evt, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const r = tip.getBoundingClientRect(); let x = evt.clientX + 14, y = evt.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - 14;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hover(node, fn) { node.addEventListener('mousemove', e => showTip(e, fn(e))); node.addEventListener('mouseleave', () => { tip.hidden = true; }); }
+const row = (k, v, c) => `<div class="r"><span>${c ? `<i class="sw" style="background:${c};vertical-align:-1px;margin-right:6px"></i>` : ''}${esc(k)}</span><b>${esc(v)}</b></div>`;
+
+function yAxis(s, m, xEnd, yMax, step, y, fmt) {
+  for (let v = 0; v <= yMax + 1e-9; v += step) {
+    const yy = crisp(y(v));
+    el('line', { x1: m.l, x2: xEnd, y1: yy, y2: yy, class: v === 0 ? 'ax' : 'gl' }, s);
+    el('text', { x: m.l - 6, y: yy + 4, 'text-anchor': 'end', class: 'tick', text: fmt(v) }, s);
+  }
+}
+function niceStep(max, ticks) { const raw = max / ticks; const p = Math.pow(10, Math.floor(Math.log10(raw))); for (const f of [1, 2, 2.5, 5, 10]) if (f * p >= raw) return f * p; return 10 * p; }
+
+// ------------------------------------------------------------------ header
+
+function renderHeader() {
+  const sw = document.getElementById('switcher');
+  const opts = [{ slug: 'all', name: 'All plans' }, ...model.plans];
+  sw.innerHTML = opts.map(p => `<button type="button" data-slug="${esc(p.slug)}" class="${p.slug === (model.selected || 'all') ? 'on' : ''}">${p.colour ? `<i style="background:${esc(p.colour)}"></i>` : ''}${esc(p.name)}</button>`).join('');
+  sw.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { selected = b.dataset.slug; writePref('plan', selected); load(); }));
+
+  const live = document.getElementById('live');
+  if (model.live) {
+    const colour = { Focused: 'var(--good)', Drifting: 'var(--warn)', Idle: 'var(--warn)', FocusLost: 'var(--crit)' }[model.live.focus] || 'var(--muted)';
+    const label = { Focused: 'Focused', Drifting: 'Off plan', Idle: 'No input', FocusLost: 'Focus lost', Paused: 'Paused', OnBreak: 'On a break' }[model.live.focus] || model.live.focus;
+    live.innerHTML = `<span class="d" style="background:${colour}"></span><b>${esc(label)}</b> · ${esc(model.live.plan)} · ${fmtMin(model.live.sessionMinutes)}`;
+    live.hidden = false;
+  } else live.hidden = true;
+
+  const plan = model.plans.find(p => p.slug === model.selected);
+  document.getElementById('subtitle').textContent = `${fmtDate(model.today)} · ${plan ? plan.name : 'All plans'}`;
+  document.getElementById('problems').innerHTML = model.planErrors.length
+    ? `<div class="banner"><b>Problems in your plan files</b> — fix and save, PrepPulse reloads automatically.<br>${model.planErrors.map(esc).join('<br>')}</div>` : '';
+  document.getElementById('legend').innerHTML = ['coding', 'design', 'ai', 'mock', 'other', 'distraction', 'neither'].map(k =>
+    `<span class="key"><i class="sw" style="background:${KINDS[k][1]}"></i>${KINDS[k][0]}</span>`).join('') +
+    `<span class="key"><i class="sw hatch"></i>No input / break / paused</span><span class="key"><span style="color:var(--crit)">▲</span>Focus-lost alert</span>`;
+  document.getElementById('foot').textContent = `Updated ${new Date(model.generatedAt).toLocaleTimeString()} · refreshes every 30 seconds · data stays on this PC`;
+}
+
+// ------------------------------------------------------------------ today
+
+function renderTiles() {
+  const t = model.tiles;
+  const pct = t.targetMinutes > 0 ? t.prepMinutes / t.targetMinutes : 0;
+  const pace = t.pacePercent == null ? '–' : `${t.pacePercent}%`;
+  const behind = t.behindHours == null ? '' : t.behindHours > 0 ? `<span class="down">▼ ${t.behindHours.toFixed(1)}h behind</span>` : `<span class="up">▲ ${Math.abs(t.behindHours).toFixed(1)}h ahead</span>`;
+  document.getElementById('tiles').innerHTML = `
+    <div class="tile hero"><div class="label">Prep time today vs ${fmtMin(t.targetMinutes)} target</div>
+      <div class="value">${fmtMin(t.prepMinutes)}</div>
+      <div class="note">${t.targetMinutes > 0 ? `<span class="${pct >= 1 ? 'up' : ''}">${Math.round(pct * 100)}% of target</span> · ` : ''}${t.sessions} session${t.sessions === 1 ? '' : 's'}, ${fmtMin(t.sessionMinutes)} total</div>
+      <div class="meter"><i style="width:${Math.min(100, pct * 100)}%"></i></div></div>
+    <div class="tile"><div class="label">Focus ratio</div><div class="value">${t.focusRatio == null ? '–' : Math.round(t.focusRatio * 100) + '%'}</div><div class="note">prep ÷ session time</div></div>
+    <div class="tile"><div class="label">Longest focus block</div><div class="value">${fmtMin(t.longestBlockMinutes)}</div><div class="note">no pause or distraction</div></div>
+    <div class="tile"><div class="label">Idle pauses</div><div class="value">${t.idlePauses}</div><div class="note">${fmtMin(t.idleMinutes)} with no input</div></div>
+    <div class="tile"><div class="label">Plan pace</div><div class="value">${pace}</div><div class="note">${behind}${behind ? ' · ' : ''}${t.streak}-day streak</div></div>`;
+}
+
+function renderTimeline() {
+  const sessions = model.timeline;
+  if (!sessions.length) { empty('ch-timeline', 'No sessions today yet. Start one from the tray icon or with Ctrl+Alt+P.'); document.getElementById('t-sessions').innerHTML = ''; return; }
+  const first = Math.min(...sessions.map(s => s.start)), last = Math.max(...sessions.map(s => s.end));
+  const grain = last - first > 240 ? 60 : 15;
+  let t0 = Math.max(0, Math.floor((first - 10) / grain) * grain), t1 = Math.min(1440, Math.ceil((last + 10) / grain) * grain);
+  if (t1 - t0 < 60) { const pad = Math.ceil((60 - (t1 - t0)) / 2 / 15) * 15; t0 = Math.max(0, t0 - pad); t1 = Math.min(1440, t0 + 60); }
+  const { s, w, h } = svgIn('ch-timeline', 126);
+  const m = { l: 10, r: 10, t: 36 }, bandH = 30;
+  const x = t => m.l + (t - t0) / (t1 - t0) * (w - m.l - m.r);
+  const hours = (t1 - t0) / 60, stepH = Math.max(0.25, [0.25, 0.5, 1, 2, 3, 4, 6].find(s => hours / s <= Math.max(3, Math.floor(w / 90))) || 6);
+  const axisY = m.t + bandH + 18;
+  el('line', { x1: m.l, x2: w - m.r, y1: crisp(axisY), y2: crisp(axisY), class: 'ax' }, s);
+  for (let hr = t0 / 60; hr <= t1 / 60 + 1e-9; hr += stepH) {
+    const xx = crisp(x(hr * 60));
+    el('line', { x1: xx, x2: xx, y1: axisY, y2: axisY + 4, class: 'ax' }, s);
+    const anchor = hr === t0 / 60 ? 'start' : hr + stepH > t1 / 60 + 1e-9 ? 'end' : 'middle';
+    el('text', { x: anchor === 'start' ? m.l : anchor === 'end' ? w - m.r : xx, y: h - 6, 'text-anchor': anchor, class: 'tick', text: clock(hr * 60) }, s);
+  }
+  sessions.forEach(ss => {
+    const a = x(ss.start), b = x(ss.end), yb = m.t - 8;
+    el('path', { d: `M${a},${yb + 4}V${yb}H${b}V${yb + 4}`, style: 'fill:none;stroke:var(--axis);stroke-width:1' }, s);
+    const label = (b - a) > 150 ? `Session ${ss.n} · ${clock(ss.start)}–${ss.live ? 'now' : clock(ss.end)}` : `${clock(ss.start)}–${ss.live ? 'now' : clock(ss.end)}`;
+    const half = label.length * 3.3;
+    el('text', { x: Math.max(m.l + half, Math.min(w - m.r - half, (a + b) / 2)), y: yb - 6, 'text-anchor': 'middle', class: 'lbl', text: label }, s);
+    ss.blocks.forEach(bl => {
+      const k = KINDS[bl.kind] || KINDS.other;
+      const node = el('rect', { x: x(bl.start) + 0.5, y: m.t, width: Math.max(1.5, x(bl.end) - x(bl.start) - 1), height: bandH, rx: 3, style: `fill:${k[1]}` }, s);
+      hover(node, () => `<div class="t">${clock(bl.start)}–${clock(bl.end)} · ${fmtMin(bl.end - bl.start)}</div>` + row(k[0], bl.label, k[1].startsWith('url') ? '' : k[1]) +
+        (bl.topic ? row('Topic', bl.topic) : '') + (bl.title ? `<div class="r" style="margin-top:2px">${esc(bl.title)}</div>` : ''));
+    });
+    ss.alerts.forEach(al => {
+      const ax = x(al.at), ay = m.t + bandH + 4;
+      const tri = el('path', { d: `M${ax},${ay}L${ax + 5},${ay + 9}L${ax - 5},${ay + 9}Z`, style: 'fill:var(--crit);stroke:var(--surface);stroke-width:1.5;stroke-linejoin:round' }, s);
+      hover(tri, () => `<div class="t">Focus-lost alert · ${clock(al.at)}</div>` + row('Trigger', al.trigger) + (al.what ? row('On', al.what) : '') + row('Answer', al.response));
+    });
+  });
+  document.getElementById('t-sessions').innerHTML = `<thead><tr><th>Session</th><th class="l">Plan</th><th>Start</th><th>Stop</th><th>Length</th><th>Prep</th><th>Idle</th><th>Distraction</th><th>Focus</th><th class="l">Ended by</th></tr></thead><tbody>` +
+    model.sessionsToday.map(r => `<tr><td>Session ${r.n}</td><td class="l">${esc(r.plan)}</td><td>${r.start}</td><td>${r.stop}</td><td>${fmtMin(r.minutes)}</td><td>${fmtMin(r.prepMinutes)}</td><td>${r.idleCount ? fmtMin(r.idleMinutes) + ` (${r.idleCount})` : '–'}</td><td>${r.distractionMinutes >= 0.5 ? fmtMin(r.distractionMinutes) : '–'}</td><td>${r.focusPercent == null ? '–' : r.focusPercent + '%'}</td><td class="l">${esc(r.endedBy)}</td></tr>`).join('') + '</tbody>';
+}
+
+function renderTimeUse() {
+  const list = model.timeUse;
+  if (!list.length) return empty('ch-timeuse', 'Nothing recorded today yet.');
+  const rowH = 24, { s, w } = svgIn('ch-timeuse', list.length * rowH + 6);
+  const lw = Math.min(180, w * 0.42), vmax = Math.max(...list.map(x => x.minutes)), bw = w - lw - 52;
+  list.forEach((r, i) => {
+    const y = i * rowH + 4, k = KINDS[r.kind] || KINDS.other;
+    el('text', { x: lw - 10, y: y + 13, 'text-anchor': 'end', class: 'lbl', text: r.label.length > 26 ? r.label.slice(0, 25) + '…' : r.label }, s);
+    const len = Math.max(2, r.minutes / vmax * bw);
+    el('path', { d: rightRounded(lw, y + 3, len, 14, 4), style: `fill:${k[1]}` }, s);
+    el('text', { x: lw + len + 6, y: y + 14, class: 'tick', text: fmtMin(r.minutes) }, s);
+    hover(el('rect', { x: 0, y, width: w, height: rowH, class: 'hit' }, s), () => `<div class="t">${esc(r.label)}</div>` + row(k[0], fmtMin(r.minutes), k[1]));
+  });
+}
+
+function renderAlerts() {
+  const t = document.getElementById('t-alerts');
+  if (!model.alerts.length) { t.innerHTML = `<tbody><tr><td class="l" style="color:var(--muted);border:0;white-space:normal">No focus-lost alerts today.</td></tr></tbody>`; return; }
+  t.innerHTML = `<thead><tr><th>Time</th><th class="l">Trigger</th><th class="l">On</th><th class="l">Answer</th><th>Back after</th></tr></thead><tbody>` +
+    model.alerts.map(a => `<tr><td>${a.time}</td><td class="l">${esc(a.trigger)}</td><td class="l">${esc(a.what || '–')}</td><td class="l">${esc(a.response)}</td><td>${a.backAfterMinutes == null ? '–' : fmtMin(a.backAfterMinutes)}</td></tr>`).join('') + '</tbody>';
+}
+
+function renderApps() {
+  const a = model.apps, t = document.getElementById('t-apps');
+  if (!a || !a.rows.length) { t.innerHTML = `<tbody><tr><td class="l" style="color:var(--muted);border:0">No session recorded yet.</td></tr></tbody>`; return; }
+  document.getElementById('apps-title').textContent = `Apps open during ${a.sessionN ? 'session ' + a.sessionN : 'the last session'} (${fmtDate(a.date)}, ${a.start}–${a.stop === 'running' ? 'now, still running' : a.stop + ', ended by ' + a.endedBy.toLowerCase()})`;
+  const maxOpen = Math.max(1, ...a.rows.map(r => Math.max(r.openMinutes, r.focusMinutes)));
+  const listLabel = { focus: ['●', 'var(--good)', 'Focus'], distraction: ['▲', 'var(--crit)', 'Distraction'], neither: ['○', 'var(--muted)', 'Neither list'], mixed: ['–', 'var(--muted)', 'Browser (by site)'], browser: ['–', 'var(--muted)', 'Browser'] };
+  t.innerHTML = `<thead><tr><th>App / site</th><th class="l">List</th><th class="l">Open vs in focus</th><th>Open</th><th>In focus</th><th class="l">Note</th></tr></thead><tbody>` +
+    a.rows.map(r => {
+      const L = listLabel[r.list] || listLabel.neither;
+      const bar = `<span class="ob"><i class="o" style="width:${r.openMinutes / maxOpen * 100}%"></i><i class="f" style="width:${r.focusMinutes / maxOpen * 100}%"></i></span>`;
+      return `<tr><td style="${r.child ? 'padding-left:24px;color:var(--ink2)' : ''}">${esc(r.name)}</td><td class="l"><span style="color:${L[1]}">${L[0]}</span> ${L[2]}</td><td class="l">${bar}</td><td>${r.child ? '–' : fmtMin(r.openMinutes)}</td><td>${r.focusMinutes >= 0.5 ? fmtMin(r.focusMinutes) : '–'}</td><td class="l">${r.note ? (r.list === 'distraction' ? '<span style="color:var(--crit)">▲</span> ' : '') + esc(r.note) : ''}</td></tr>`;
+    }).join('') + '</tbody>';
+}
+
+// ------------------------------------------------------------------ progress
+
+function renderDaily() {
+  const days = model.days;
+  const { s, w, h } = svgIn('ch-daily', 250);
+  const m = { l: 34, r: 8, t: 12, b: 36 }, iw = w - m.l - m.r, ih = h - m.t - m.b, n = days.length;
+  const maxV = Math.max(60, ...days.map(d => Math.max(d.total, d.target)));
+  const step = maxV <= 240 ? 60 : 120, yMax = Math.ceil(maxV / step) * step, y = v => m.t + ih - v / yMax * ih;
+  yAxis(s, m, w - m.r, yMax, step, y, v => v ? (v / 60) + 'h' : '0');
+  const band = iw / n, bw = Math.min(24, band * 0.56);
+  days.forEach((d, i) => {
+    const cx = m.l + band * (i + 0.5), x0 = cx - bw / 2;
+    const present = CATS.filter(c => d.byCategory[c] > 0.05), top = present[present.length - 1];
+    let acc = 0;
+    present.forEach(c => {
+      const v = d.byCategory[c], yTop = y(acc + v), yBot = y(acc) - (acc > 0 ? 2 : 0);
+      el('path', { d: c === top ? topRounded(x0, yTop, bw, Math.max(0, yBot - yTop), 4) : rectPath(x0, yTop, bw, Math.max(0, yBot - yTop)), style: `fill:${KINDS[c][1]}` }, s);
+      acc += v;
+    });
+    if (d.target > 0) { const ty = crisp(y(d.target)); el('line', { x1: cx - band * 0.4, x2: cx + band * 0.4, y1: ty, y2: ty, class: 'target' }, s); }
+    const isToday = d.date === model.today, dd = day(d.date);
+    el('text', { x: cx, y: h - m.b + 16, 'text-anchor': 'middle', class: 'tick' + (isToday ? ' strong' : ''), text: dd.getDate() }, s);
+    el('text', { x: cx, y: h - m.b + 30, 'text-anchor': 'middle', class: 'tick', text: WD[dd.getDay()].slice(0, band < 30 ? 1 : 3) }, s);
+    hover(el('rect', { x: cx - band / 2, y: m.t, width: band, height: ih, class: 'hit' }, s), () =>
+      `<div class="t">${fmtDate(d.date)}${isToday ? ' (today)' : ''}</div>` + row('Prep time', d.total ? fmtMin(d.total) : 'none') + row('Target', fmtMin(d.target)) +
+      (d.target > 0 ? row('Attainment', Math.round(d.total / d.target * 100) + '%') : '') +
+      CATS.filter(c => d.byCategory[c] > 0.05).map(c => row(KINDS[c][0], fmtMin(d.byCategory[c]), KINDS[c][1])).join(''));
+  });
+}
+
+function renderTrend() {
+  if (model.burnUp) return renderBurnUp(model.burnUp);
+  document.getElementById('trend-title').textContent = 'Weekly progress';
+  document.getElementById('trend-meta').textContent = 'Prep time per week (Monday to Sunday) against the weekly target. Shown for open-ended plans and "All plans"; pick a plan with an end date for a burn-up to its finish line.';
+  const weeks = model.weeks, { s, w, h } = svgIn('ch-trend', 230);
+  const m = { l: 40, r: 8, t: 14, b: 26 }, iw = w - m.l - m.r, ih = h - m.t - m.b;
+  const maxV = Math.max(60, ...weeks.map(x => Math.max(x.minutes, x.targetMinutes)));
+  const stepH = niceStep(maxV / 60, 4), yMax = Math.ceil(maxV / 60 / stepH) * stepH * 60, y = v => m.t + ih - v / yMax * ih;
+  yAxis(s, m, w - m.r, yMax, stepH * 60, y, v => (v / 60) + 'h');
+  const band = iw / weeks.length, bw = Math.min(28, band * 0.5);
+  weeks.forEach((wk, i) => {
+    const cx = m.l + band * (i + .5);
+    if (wk.minutes > 0) el('path', { d: topRounded(cx - bw / 2, y(wk.minutes), bw, y(0) - y(wk.minutes), 4), style: 'fill:var(--accent)' }, s);
+    if (wk.targetMinutes > 0) { const ty = crisp(y(wk.targetMinutes)); el('line', { x1: cx - band * .38, x2: cx + band * .38, y1: ty, y2: ty, class: 'target' }, s); }
+    el('text', { x: cx, y: h - 8, 'text-anchor': 'middle', class: 'tick' + (i === weeks.length - 1 ? ' strong' : ''), text: fmtShort(wk.weekStart) }, s);
+    hover(el('rect', { x: cx - band / 2, y: m.t, width: band, height: ih, class: 'hit' }, s), () => `<div class="t">Week of ${fmtShort(wk.weekStart)}</div>` + row('Prep time', fmtMin(wk.minutes), 'var(--accent)') + row('Target', fmtMin(wk.targetMinutes)));
+  });
+}
+
+function renderBurnUp(bu) {
+  document.getElementById('trend-title').textContent = `Burn-up to ${fmtShort(bu.end)} — ${bu.plan}`;
+  document.getElementById('trend-meta').textContent = 'Cumulative hours: the grey line is the plan, solid blue is actual, dashed is where your last 7 days\' pace leads.';
+  const N = bu.planned.length - 1, { s, w, h } = svgIn('ch-trend', 270);
+  const m = { l: 40, r: w < 520 ? 80 : 110, t: 22, b: 28 }, iw = w - m.l - m.r, ih = h - m.t - m.b;
+  const maxH = Math.max(1, bu.planned[N], ...bu.projected.filter(v => v != null), ...bu.actual.filter(v => v != null));
+  const stepH = niceStep(maxH, 5), yMax = Math.ceil(maxH / stepH) * stepH;
+  const x = i => m.l + (N ? i / N : 0) * iw, y = v => m.t + ih - v / yMax * ih;
+  yAxis(s, m, m.l + iw, yMax, stepH, y, v => v + 'h');
+  const start = day(bu.start);
+  const nTicks = Math.max(2, Math.floor(iw / 80)), every = Math.max(1, Math.ceil(N / nTicks));
+  for (let i = 0; i <= N; i += every) { const d = new Date(start); d.setDate(d.getDate() + i); el('text', { x: x(i), y: h - 8, 'text-anchor': 'middle', class: 'tick', text: `${d.getDate()} ${d.toLocaleString('en-AU', { month: 'short' })}` }, s); }
+  const path = (arr, from) => arr.map((v, i) => [i, v]).filter(([i, v]) => i >= from && v != null).map(([i, v], k) => `${k ? 'L' : 'M'}${x(i)},${y(v)}`).join('');
+  el('path', { d: path(bu.planned, 0), style: 'fill:none;stroke:var(--ink2);stroke-width:2;stroke-linejoin:round' }, s);
+  if (bu.todayIndex >= 0) {
+    const tx = crisp(x(bu.todayIndex));
+    el('line', { x1: tx, x2: tx, y1: m.t - 6, y2: m.t + ih, class: 'ax' }, s);
+    el('text', { x: tx, y: m.t - 10, 'text-anchor': 'middle', class: 'tick strong', text: 'Today' }, s);
+    el('path', { d: path(bu.projected, bu.todayIndex), style: 'fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:5 4;opacity:.75' }, s);
+    const act = path(bu.actual, 0);
+    el('path', { d: `${act}L${x(bu.todayIndex)},${y(0)}L${x(0)},${y(0)}Z`, style: 'fill:var(--wash);stroke:none' }, s);
+    el('path', { d: act, style: 'fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round' }, s);
+    const at = bu.actual[bu.todayIndex];
+    el('circle', { cx: x(bu.todayIndex), cy: y(at), r: 4.5, style: 'fill:var(--accent);stroke:var(--surface);stroke-width:2' }, s);
+    el('text', { x: x(bu.todayIndex) - 8, y: y(at) - 10, 'text-anchor': 'end', class: 'lbl strong', text: `${at.toFixed(1)}h done` }, s);
+    el('circle', { cx: x(N), cy: y(bu.projected[N]), r: 4.5, style: 'fill:var(--accent);stroke:var(--surface);stroke-width:2' }, s);
+    el('text', { x: x(N) + 10, y: y(bu.projected[N]) + 14, class: 'lbl', text: `Projected ${Math.round(bu.projected[N])}h` }, s);
+  }
+  el('circle', { cx: x(N), cy: y(bu.planned[N]), r: 4.5, style: 'fill:var(--ink2);stroke:var(--surface);stroke-width:2' }, s);
+  el('text', { x: x(N) + 10, y: y(bu.planned[N]) - 2, class: 'lbl strong', text: `Plan ${Math.round(bu.planned[N])}h` }, s);
+  const hit = el('rect', { x: m.l, y: m.t, width: iw, height: ih, class: 'hit' }, s);
+  hover(hit, e => {
+    const r = s.getBoundingClientRect(); const i = Math.max(0, Math.min(N, Math.round((e.clientX - r.left - m.l) / iw * N)));
+    const d = new Date(start); d.setDate(d.getDate() + i);
+    const a = bu.actual[i] != null ? bu.actual[i] : bu.projected[i];
+    return `<div class="t">${WD[d.getDay()]} ${d.getDate()} ${d.toLocaleString('en-AU', { month: 'short' })}</div>` + row('Planned', bu.planned[i].toFixed(1) + 'h', 'var(--ink2)') +
+      (a != null ? row(bu.actual[i] != null ? 'Actual' : 'Projected', a.toFixed(1) + 'h', 'var(--accent)') : '');
+  });
+}
+
+function renderFocus() {
+  const days = model.focusRatio;
+  if (!days.some(d => d.ratio != null)) return empty('ch-focus', 'Shows once you have a few sessions.');
+  const { s, w, h } = svgIn('ch-focus', 200);
+  const m = { l: 38, r: 44, t: 14, b: 26 }, iw = w - m.l - m.r, ih = h - m.t - m.b, n = days.length;
+  const lo = 0, y = v => m.t + ih - (v - lo) / (1 - lo) * ih, x = i => m.l + iw * i / (n - 1);
+  yAxis(s, m, m.l + iw, 1, 0.25, v => y(v), v => Math.round(v * 100) + '%');
+  const ty = crisp(y(0.8));
+  el('line', { x1: m.l, x2: m.l + iw, y1: ty, y2: ty, style: 'stroke:var(--ink2);stroke-width:1' }, s);
+  el('text', { x: m.l + iw + 6, y: ty + 4, class: 'tick', text: '80%' }, s);
+  let d = '', pen = false;
+  days.forEach((dd, i) => { if (dd.ratio == null) { pen = false; return; } d += `${pen ? 'L' : 'M'}${x(i)},${y(Math.min(1, dd.ratio))}`; pen = true; });
+  el('path', { d, style: 'fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round;stroke-linecap:round' }, s);
+  days.forEach((dd, i) => {
+    const isToday = dd.date === model.today;
+    if (i % 2 === 1 || isToday) el('text', { x: x(i), y: h - 6, 'text-anchor': 'middle', class: 'tick' + (isToday ? ' strong' : ''), text: day(dd.date).getDate() }, s);
+    if (dd.ratio == null) return;
+    el('circle', { cx: x(i), cy: y(Math.min(1, dd.ratio)), r: 4, style: 'fill:var(--accent);stroke:var(--surface);stroke-width:2' }, s);
+    hover(el('rect', { x: x(i) - iw / (n - 1) / 2, y: m.t, width: iw / (n - 1), height: ih, class: 'hit' }, s), () => `<div class="t">${fmtDate(dd.date)}</div>` + row('Focus ratio', Math.round(dd.ratio * 100) + '%', 'var(--accent)'));
+  });
+}
+
+function renderTopics() {
+  const list = model.topics;
+  if (!list.length) return empty('ch-topics', 'No topics in the selected plan.');
+  const multi = new Set(list.map(t => t.plan)).size > 1, rowH = 40, { s, w } = svgIn('ch-topics', list.length * rowH);
+  const right = 92, bw = w - right, max = Math.max(1, ...list.map(t => Math.max(t.totalHours || 0, t.doneHours)));
+  list.forEach((t, i) => {
+    const y = i * rowH, sc = v => v / max * bw;
+    el('text', { x: 0, y: y + 13, class: 'lbl', text: (multi ? t.plan + ' · ' : '') + t.name }, s);
+    if (t.totalHours) el('rect', { x: 0, y: y + 20, width: sc(t.totalHours), height: 8, rx: 4, style: 'fill:var(--empty)' }, s);
+    el('rect', { x: 0, y: y + 20, width: Math.max(4, sc(t.doneHours)), height: 8, rx: 4, style: `fill:${(KINDS[t.category] || KINDS.other)[1]}` }, s);
+    if (t.dueHours != null) { const tx = crisp(sc(t.dueHours)); el('line', { x1: tx, x2: tx, y1: y + 16, y2: y + 32, class: 'target' }, s); }
+    const label = el('text', { x: w, y: y + 28, 'text-anchor': 'end', class: 'lbl' }, s);
+    if (t.dueHours != null) {
+      const diff = t.doneHours - t.dueHours;
+      label.innerHTML = diff >= 0 ? `<tspan style="fill:var(--up)">▲</tspan> ${diff.toFixed(1)}h ahead` : `<tspan style="fill:var(--down)">▼</tspan> ${Math.abs(diff).toFixed(1)}h behind`;
+    } else label.textContent = `${t.doneHours.toFixed(1)}h done`;
+    hover(el('rect', { x: 0, y, width: w, height: rowH, class: 'hit' }, s), () => `<div class="t">${esc(t.name)}</div>` + row('Done', t.doneHours.toFixed(1) + 'h', (KINDS[t.category] || KINDS.other)[1]) +
+      (t.dueHours != null ? row('Planned by today', t.dueHours.toFixed(1) + 'h') : '') + (t.totalHours ? row('Full topic', t.totalHours + 'h') : ''));
+  });
+}
+
+function renderPlans() {
+  const host = document.getElementById('plans');
+  if (!model.plans.length) { host.innerHTML = '<div class="empty">No plans yet. Add a .yaml file to your plans folder — there is a README there.</div>'; return; }
+  host.innerHTML = model.plans.map(p => {
+    const open = p.end == null;
+    const main = open ? [`This week`, `${fmtMin(p.weekMinutes)} / ${fmtMin(p.weekTargetMinutes)}`, p.weekTargetMinutes ? p.weekMinutes / p.weekTargetMinutes : 0]
+      : [`Done vs full plan`, `${p.doneHours.toFixed(1)}h / ${p.planHours ?? '–'}h`, p.planHours ? p.doneHours / p.planHours : 0];
+    const pace = p.behindHours == null ? '' : p.behindHours > 0 ? `<span class="down">▼ ${p.behindHours.toFixed(1)}h behind</span> · ${p.pacePercent}% of planned pace` : `<span class="up">▲ ${Math.abs(p.behindHours).toFixed(1)}h ahead</span>`;
+    return `<div class="plan-card"><div class="t"><i style="background:${esc(p.colour)}"></i>${esc(p.name)}${p.paused ? ' (paused)' : ''}</div>
+      <div class="sub" style="font-size:12px;margin-top:2px">${esc(fmtShort(p.start))} → ${open ? 'no end date' : esc(fmtShort(p.end)) + ` · ${p.daysLeft} days left`} · ${esc(p.targets)} · ${p.topicCount} topics</div>
+      <div class="row"><span>${main[0]}</span><b>${main[1]}</b></div>
+      <div class="meter"><i style="width:${Math.min(100, main[2] * 100)}%;background:${esc(p.colour)}"></i></div>
+      <div class="row"><span>Today</span><b>${fmtMin(p.todayMinutes)} / ${fmtMin(p.todayTargetMinutes)}</b></div>
+      <div class="sub" style="font-size:12px;margin-top:6px">${pace}</div></div>`;
+  }).join('');
+}
+
+function render() {
+  if (!model) return;
+  renderHeader(); renderTiles(); renderTimeline(); renderTimeUse(); renderAlerts(); renderApps();
+  renderDaily(); renderTrend(); renderFocus(); renderTopics(); renderPlans();
+}
+
+async function load() {
+  try {
+    const res = await fetch('api/dashboard?plan=' + encodeURIComponent(selected));
+    if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+    model = await res.json();
+    if (selected !== 'all' && !model.selected) { selected = 'all'; writePref('plan', 'all'); }
+    render();
+  } catch (e) {
+    document.getElementById('subtitle').textContent = 'Can\'t reach PrepPulse — is it running? (' + e.message + ')';
+  }
+}
+
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  writePref('theme', root.dataset.theme);
+  document.getElementById('themeBtn').textContent = dark ? 'Dark mode' : 'Light mode';
+});
+(function () { const t = readPref('theme'); if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeBtn').textContent = t === 'dark' ? 'Light mode' : 'Dark mode'; } })();
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>
