@@ -23,12 +23,10 @@ public interface IShellCommands
 /// Text commands ("start interview-prep", "stop", "status"...) from the command line, routed to the engine or the UI.
 /// Single-instance: a second PrepPulse.exe forwards its arguments here over a per-user named pipe and exits.
 /// </summary>
-public sealed class CommandRouter(FocusEngine engine, CatalogService catalog, ILogger<CommandRouter> log)
+public sealed class CommandRouter(FocusEngine engine, CatalogService catalog, DashboardServer dashboard, ILogger<CommandRouter> log)
 {
     private readonly TaskCompletionSource<IShellCommands> _shell = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
-
-    public string DashboardUrl { get; set; } = "";
 
     public void AttachShell(IShellCommands shell) => _shell.TrySetResult(shell);
 
@@ -57,7 +55,7 @@ public sealed class CommandRouter(FocusEngine engine, CatalogService catalog, IL
                 case "break": engine.StartBreak(); return Status();
                 case "status": return Status();
                 case "show": WithShell(s => s.Show()); return Reply(true, "shown");
-                case "dashboard": WithShell(s => s.OpenDashboard()); return Reply(true, DashboardUrl);
+                case "dashboard": WithShell(s => s.OpenDashboard()); return Reply(true, dashboard.EnsureStarted());
                 case "exit": WithShell(s => s.Exit()); return Reply(true, "exiting");
                 default: return Reply(false, $"Unknown command '{verb}'.");
             }
@@ -105,7 +103,7 @@ public sealed class CommandRouter(FocusEngine engine, CatalogService catalog, IL
             prepTodayMinutes = Math.Round(s.PrepToday.TotalMinutes, 1),
             targetTodayMinutes = Math.Round(s.TargetToday.TotalMinutes, 1),
             alert = s.Alert?.Trigger.ToString(),
-            dashboard = DashboardUrl,
+            dashboard = dashboard.Url ?? "not running (starts when you open the dashboard)",
         }, Json);
     }
 

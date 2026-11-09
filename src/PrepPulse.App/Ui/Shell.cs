@@ -23,6 +23,7 @@ internal sealed class Shell : IShellCommands, IDisposable
     private readonly SqliteStore _store;
     private readonly IClock _clock;
     private readonly int _recoveredSessions;
+    private readonly DashboardServer _dashboard;
     private TrayIcon? _tray;
     private SessionWindow? _session;
     private AlertWindow? _alert;
@@ -31,12 +32,12 @@ internal sealed class Shell : IShellCommands, IDisposable
     private string? _hotkeySpec;
     private bool _exiting;
 
-    public Shell(FocusEngine engine, CatalogService catalog, SqliteStore store, AppPaths paths, IClock clock, string dashboardUrl, int recoveredSessions)
+    public Shell(FocusEngine engine, CatalogService catalog, SqliteStore store, AppPaths paths, IClock clock, DashboardServer dashboard, int recoveredSessions)
     {
         Engine = engine;
         Catalog = catalog;
         Paths = paths;
-        DashboardUrl = dashboardUrl;
+        _dashboard = dashboard;
         _store = store;
         _clock = clock;
         _recoveredSessions = recoveredSessions;
@@ -46,7 +47,6 @@ internal sealed class Shell : IShellCommands, IDisposable
     public FocusEngine Engine { get; }
     public CatalogService Catalog { get; }
     public AppPaths Paths { get; }
-    public string DashboardUrl { get; }
     public string? LastPlanSlug { get; private set; }
     public string HotkeyText => Catalog.Settings.Hotkey;
 
@@ -106,7 +106,10 @@ internal sealed class Shell : IShellCommands, IDisposable
 
             case SessionEnded ended:
                 CloseAlert();
+                // Close it rather than hide it: a new one is made for the next session, so nothing sits in memory between sessions.
                 _session?.HideForEnd();
+                _session?.ForceClose();
+                _session = null;
                 var prep = Durations.Format(_store.SumPrep(LastPlanSlug ?? "", LocalTime.StartOfDay(LocalTime.DateOf(_clock.Now, _clock.Zone), _clock.Zone), _clock.Now));
                 var why = ended.Reason switch
                 {
@@ -235,7 +238,15 @@ internal sealed class Shell : IShellCommands, IDisposable
         else Engine.StartBreak();
     }
 
-    public void OpenDashboard() => Launch(DashboardUrl);
+    public void OpenDashboard()
+    {
+        try { Launch(_dashboard.EnsureStarted()); }
+        catch (Exception ex)
+        {
+            AppLog.Error("The dashboard couldn't start", ex);
+            _tray?.Balloon("Dashboard", $"The dashboard couldn't start: {ex.Message}");
+        }
+    }
 
 
     public void OpenPlansFolder() => Launch(Paths.PlansDir);

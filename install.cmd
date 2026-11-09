@@ -29,8 +29,13 @@ if exist "%EXE%" "%EXE%" --exit >nul 2>&1
 if exist "%DEVEXE%" "%DEVEXE%" --data-dir "%CD%\.artifacts\testrun" --exit >nul 2>&1
 ping -n 3 127.0.0.1 >nul
 
+rem Start from an empty program folder so files from older builds don't linger.
+if exist "%TARGET%" rmdir /s /q "%TARGET%"
+
+rem Windows x64 only (no Linux/macOS copies of SQLite), uses the installed .NET runtime, and is compiled ahead of time
+rem (ReadyToRun) so it starts faster and spends less memory compiling at runtime.
 echo Publishing PrepPulse to %TARGET% ...
-dotnet publish src\PrepPulse.App\PrepPulse.App.csproj -c Release -o "%TARGET%" -nologo -v minimal >> "%LOG%" 2>&1
+dotnet publish src\PrepPulse.App\PrepPulse.App.csproj -c Release -r win-x64 --self-contained false -p:PublishReadyToRun=true -o "%TARGET%" -nologo -v minimal >> "%LOG%" 2>&1
 if errorlevel 1 (
   echo Publish failed. See .artifacts\logs\install.log
   >> "%LOG%" echo result: publish failed

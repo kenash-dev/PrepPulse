@@ -9,6 +9,8 @@ public sealed class AppSettings
     public AlertSettings Alerts { get; set; } = new();
     public SessionSettings Session { get; set; } = new();
     public int DashboardPort { get; set; } = 5317;
+    /// <summary>The dashboard's web server starts when you open the dashboard and stops after this many minutes unused. 0 = keep it running.</summary>
+    public double DashboardIdleMinutes { get; set; } = 10;
     public string Hotkey { get; set; } = "Ctrl+Alt+P";
     public bool ShowPickerOnLaunch { get; set; } = true;
     public bool SessionWindowMinimized { get; set; } = true;
@@ -105,6 +107,7 @@ public static class SettingsFile
           },
 
           "DashboardPort": 5317,
+          "DashboardIdleMinutes": 10,     // the dashboard server starts on demand and stops after this long unused (0 = always on)
           "Hotkey": "Ctrl+Alt+P",
           "ShowPickerOnLaunch": true,
           "SessionWindowMinimized": true

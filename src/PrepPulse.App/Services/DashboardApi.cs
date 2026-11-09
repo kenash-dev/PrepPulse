@@ -12,14 +12,15 @@ using PrepPulse.Data;
 
 namespace PrepPulse.App.Services;
 
-/// <summary>The local dashboard: one HTML page and one JSON endpoint, on 127.0.0.1 only.</summary>
+/// <summary>The local dashboard: one HTML page and two JSON endpoints, on 127.0.0.1 only. Hosted by <see cref="DashboardServer"/>.</summary>
 public static class DashboardApi
 {
-    public static void Map(WebApplication app, CatalogService catalog, SqliteStore store, FocusEngine engine, IClock clock)
+    public static void Map(WebApplication app, CatalogService catalog, SqliteStore store, FocusEngine engine, IClock clock, Action? onRequest = null)
     {
         // Only answer to localhost names, so a web page can't reach the API through DNS rebinding.
         app.Use(async (ctx, next) =>
         {
+            onRequest?.Invoke();
             var host = ctx.Request.Host.Host;
             if (host is not ("127.0.0.1" or "localhost"))
             {

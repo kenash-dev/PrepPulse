@@ -1,10 +1,14 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using PrepPulse.Core;
 
 namespace PrepPulse.App;
 
-/// <summary>Plain daily log files in the data folder's logs directory. No logging package needed.</summary>
+/// <summary>
+/// Plain daily log files in the data folder's logs directory, kept for <see cref="Housekeeping.KeepLogDays"/> days.
+/// No logging package needed.
+/// </summary>
 public sealed class FileLoggerProvider : ILoggerProvider
 {
     private readonly string _dir;
@@ -14,6 +18,23 @@ public sealed class FileLoggerProvider : ILoggerProvider
     {
         _dir = dir;
         Directory.CreateDirectory(dir);
+        DeleteOldLogs();
+    }
+
+    private void DeleteOldLogs()
+    {
+        try
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            foreach (var file in Housekeeping.ExpiredLogs(Directory.EnumerateFiles(_dir, "preppulse-*.log"), today))
+            {
+                try { File.Delete(file); }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
+            }
+        }
+        catch (IOException) { /* housekeeping must never stop the app starting */ }
+        catch (UnauthorizedAccessException) { }
     }
 
     public string CurrentFile => Path.Combine(_dir, $"preppulse-{DateTime.Now:yyyyMMdd}.log");
