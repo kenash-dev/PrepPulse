@@ -1,0 +1,31 @@
+#!/bin/sh
+# PrepPulse branch policy (CONTRIBUTING.md):
+#   - nothing is pushed to dev or main; they change only through pull requests
+#   - the only branches pushed are feature/, fix/, docs/ and chore/ branches, which merge into dev by pull request
+# GitHub enforces the same rules on the server (.github/rulesets, .github/workflows/branch-guard.yml);
+# this hook just catches mistakes before they leave your PC.
+
+# Git sends one line per ref: <local ref> <local sha> <remote ref> <remote sha>.
+while read -r _ local_sha remote_ref _; do
+  case "$remote_ref" in
+    refs/heads/dev|refs/heads/main)
+      echo "PrepPulse policy: nothing is pushed to '${remote_ref#refs/heads/}'; it only changes through a pull request." >&2
+      echo "  Push your feature branch instead:  git push -u origin <feature-branch>" >&2
+      echo "  then open a pull request into dev. See CONTRIBUTING.md." >&2
+      exit 1
+      ;;
+    refs/heads/feature/?*|refs/heads/fix/?*|refs/heads/docs/?*|refs/heads/chore/?*)
+      ;;
+    refs/heads/*)
+      case "$local_sha" in
+        *[!0]*)
+          echo "PrepPulse policy: '${remote_ref#refs/heads/}' isn't a feature/, fix/, docs/ or chore/ branch, so it couldn't merge into dev." >&2
+          echo "  Rename it first:  git branch -m feature/<name>" >&2
+          exit 1
+          ;;
+      esac
+      # All zeros = deleting a remote branch, which is fine (dev and main are caught above).
+      ;;
+  esac
+done
+exit 0

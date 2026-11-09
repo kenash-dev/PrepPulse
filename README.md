@@ -46,6 +46,8 @@ Requires Windows 10/11 and the [.NET 10 SDK](https://dotnet.microsoft.com/downlo
 |---|---|
 | `build.cmd` | Restore, build (Release) and run the tests. Log in `.artifacts\logs\build.log` |
 | `run.cmd` | Start PrepPulse with your real data |
+| `install.cmd [folder]` | Install for this user: publish to `%LOCALAPPDATA%\Programs\PrepPulse`, start with Windows, start now. Pass a folder (e.g. `install.cmd D:\Dev\PrepPlan`) to keep plans and settings there instead of `Documents\PrepPulse`. Run again to update |
+| `uninstall.cmd` | Stop it, remove it from startup and delete the program folder. Plans, settings and history are kept |
 | `tests\testrun\testrun.cmd` | Live test with separate data (`.artifacts\testrun`) and fast thresholds (30 s idle, 30 s distraction, 90 s no input) |
 
 Or from a terminal: `dotnet build -c Release` then `dotnet test`.
@@ -72,6 +74,16 @@ PrepPulse.exe --probe 20                                     # print what it see
 - [`docs/architecture.md`](docs/architecture.md): structure, patterns used, critical decisions, what the live test found, known limitations.
 - [`docs/brainstorm.md`](docs/brainstorm.md): the original design covering capture, metrics, data model, privacy and roadmap.
 - [`docs/design/dashboard-templates.html`](docs/design/dashboard-templates.html): taskbar, tray, alert and chart mockups (open in a browser).
+
+## Contributing
+
+Work happens on feature branches:
+
+- Only `feature/`, `fix/`, `docs/` and `chore/` branches merge into `dev`, through pull requests, once the build and all unit tests pass.
+- Only `dev` merges into `main`, after the same checks and with the owner's approval.
+- Nothing is pushed to `dev` or `main`: GitHub rules and local git hooks block it.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). After cloning, run `tools\setup-hooks.cmd`.
 
 ## Stack
 

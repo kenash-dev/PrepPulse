@@ -1,0 +1,51 @@
+# Builds the solution and runs every unit test.
+# The job name "build-and-test" is a required status check for pull requests into dev and main
+# (see .github/rulesets and CONTRIBUTING.md). Renaming the job means updating the rulesets too.
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: build-and-test
+    # The app targets net10.0-windows (WPF), so the solution builds on Windows.
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore PrepPulse.slnx
+
+      - name: Build
+        run: dotnet build PrepPulse.slnx -c Release --no-restore -nologo
+
+      - name: Test
+        run: dotnet test PrepPulse.slnx -c Release --no-build -nologo --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: ignore

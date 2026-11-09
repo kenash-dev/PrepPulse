@@ -1,0 +1,55 @@
+# Enforces where pull requests may come from:
+#   into main: only from this repo's dev branch
+#   into dev:  only from feature/, fix/, docs/ or chore/ branches
+# The job name "source-branch" is a required status check on dev and main (see .github/rulesets).
+#
+# Why pull_request_target: GitHub runs it from the default branch (dev), never from the pull request,
+# so a pull request can't edit this file to pass its own check. That's only safe because this workflow
+# never checks out or runs code from the pull request, has no permissions and uses no secrets.
+# Keep it that way: no actions/checkout, no secrets, no `permissions` beyond {}.
+name: Branch guard
+
+on:
+  pull_request_target:
+    branches: [dev, main]
+    types: [opened, reopened, synchronize, edited]
+
+permissions: {}
+
+jobs:
+  source-branch:
+    name: source-branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check where the pull request comes from
+        shell: bash
+        # Branch names arrive through env vars, never pasted into the script, so they can't inject shell code.
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          THIS_REPO: ${{ github.repository }}
+        run: |
+          case "$BASE_REF" in
+            main)
+              if [ "$HEAD_REF" = "dev" ] && [ "$HEAD_REPO" = "$THIS_REPO" ]; then
+                echo "OK: dev -> main"
+                exit 0
+              fi
+              echo "::error::Only dev can merge into main. This pull request is from $HEAD_REPO:$HEAD_REF. Open it into dev instead."
+              exit 1
+              ;;
+            dev)
+              if [[ "$HEAD_REF" =~ ^(feature|fix|docs|chore)/[A-Za-z0-9._/-]+$ ]]; then
+                echo "OK: $HEAD_REF -> dev"
+                exit 0
+              fi
+              echo "::error::Only feature/, fix/, docs/ or chore/ branches can merge into dev. This pull request is from '$HEAD_REF'. Rename the branch (e.g. feature/my-change) and open a new pull request."
+              exit 1
+              ;;
+            *)
+              echo "::error::Unexpected target branch '$BASE_REF'."
+              exit 1
+              ;;
+          esac
