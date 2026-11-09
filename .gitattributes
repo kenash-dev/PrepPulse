@@ -6,3 +6,5 @@
 *.ico    binary
 *.cmd    text eol=crlf
 *.slnx   text eol=crlf
+.githooks/* text eol=lf
+*.sh     text eol=lf

@@ -75,6 +75,16 @@ PrepPulse.exe --probe 20                                     # print what it see
 - [`docs/brainstorm.md`](docs/brainstorm.md): the original design covering capture, metrics, data model, privacy and roadmap.
 - [`docs/design/dashboard-templates.html`](docs/design/dashboard-templates.html): taskbar, tray, alert and chart mockups (open in a browser).
 
+## Contributing
+
+Work happens on feature branches:
+
+- Only `feature/`, `fix/`, `docs/` and `chore/` branches merge into `dev`, through pull requests, once the build and all unit tests pass.
+- Only `dev` merges into `main`, after the same checks and with the owner's approval.
+- Nothing is pushed to `dev` or `main`: GitHub rules and local git hooks block it.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). After cloning, run `tools\setup-hooks.cmd`.
+
 ## Stack
 
 C# / .NET 10 · WPF + WinForms tray icon · Win32 P/Invoke + UI Automation · SQLite (Microsoft.Data.Sqlite + Dapper) · YamlDotNet · Generic Host with a Kestrel minimal API serving the dashboard · xUnit.
