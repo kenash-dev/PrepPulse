@@ -46,6 +46,8 @@ Requires Windows 10/11 and the [.NET 10 SDK](https://dotnet.microsoft.com/downlo
 |---|---|
 | `build.cmd` | Restore, build (Release) and run the tests. Log in `.artifacts\logs\build.log` |
 | `run.cmd` | Start PrepPulse with your real data |
+| `install.cmd [folder]` | Install for this user: publish to `%LOCALAPPDATA%\Programs\PrepPulse`, start with Windows, start now. Pass a folder (e.g. `install.cmd D:\Dev\PrepPlan`) to keep plans and settings there instead of `Documents\PrepPulse`. Run again to update |
+| `uninstall.cmd` | Stop it, remove it from startup and delete the program folder. Plans, settings and history are kept |
 | `tests\testrun\testrun.cmd` | Live test with separate data (`.artifacts\testrun`) and fast thresholds (30 s idle, 30 s distraction, 90 s no input) |
 
 Or from a terminal: `dotnet build -c Release` then `dotnet test`.
