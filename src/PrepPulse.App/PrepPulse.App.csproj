@@ -11,10 +11,17 @@
     <RootNamespace>PrepPulse.App</RootNamespace>
     <StartupObject>PrepPulse.App.Program</StartupObject>
     <Product>PrepPulse</Product>
+    <!-- A tray app: no background GC thread, and let the GC trade a little CPU for a smaller heap. -->
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Kestrel + Generic Host for the local dashboard, background services and DI. Part of the shared framework, no NuGet. -->
+    <!-- 0-9; higher compacts more aggressively to keep the heap small. -->
+    <RuntimeHostConfigurationOption Include="System.GC.ConserveMemory" Value="5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Generic Host (background services, DI) and Kestrel for the on-demand dashboard. Part of the shared framework, no NuGet. -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

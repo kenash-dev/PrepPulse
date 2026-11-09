@@ -8,8 +8,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,8 +23,8 @@ using PrepPulse.Data;
 namespace PrepPulse.App;
 
 /// <summary>
-/// Entry point. Composition root: builds the host (DI, background services, local dashboard), then runs the WPF
-/// message loop for the tray, windows and hotkey. A second PrepPulse.exe forwards its command to the first and exits.
+/// Entry point. Composition root: builds the host (DI, background services), then runs the WPF message loop for the
+/// tray, windows and hotkey. The local dashboard's web server starts on demand (DashboardServer). A second PrepPulse.exe forwards its command to the first and exits.
 /// </summary>
 public static class Program
 {
@@ -99,35 +97,33 @@ public static class Program
         var engine = new FocusEngine(clock, store, () => catalog.Settings, () => catalog.Catalog);
         engine.Event += e => log.LogInformation("Event: {Event}", e);
 
-        var port = DashboardApi.ChoosePort(catalog.Settings.DashboardPort);
-        var dashboardUrl = $"http://127.0.0.1:{port}/";
-
-        var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
+        // The background services run on a plain Generic Host. The dashboard's web server isn't part of it: it starts
+        // only when you open the dashboard and stops when unused (DashboardServer), so it costs nothing most of the day.
+        var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
         {
             Args = [],
             ContentRootPath = AppContext.BaseDirectory,
+            DisableDefaults = true,
         });
         builder.Logging.ClearProviders();
         builder.Logging.AddProvider(logProvider);
-        builder.WebHost.ConfigureKestrel(k => k.Listen(IPAddress.Loopback, port));
+        var dashboard = new DashboardServer(catalog, store, engine, clock, logProvider, loggerFactory.CreateLogger<DashboardServer>());
         builder.Services.AddSingleton(paths);
         builder.Services.AddSingleton<IClock>(clock);
         builder.Services.AddSingleton(store);
         builder.Services.AddSingleton(catalog);
         builder.Services.AddSingleton(engine);
+        builder.Services.AddSingleton(dashboard);
         builder.Services.AddSingleton<WindowProbe>();
         builder.Services.AddSingleton<BrowserAddressProbe>();
         builder.Services.AddSingleton<CommandRouter>();
         builder.Services.AddHostedService<SamplerService>();
         builder.Services.AddHostedService<PipeServer>();
 
-        var app = builder.Build();
-        DashboardApi.Map(app, catalog, store, engine, clock);
-        app.StartAsync().GetAwaiter().GetResult();
-        log.LogInformation("Dashboard on {Url}", dashboardUrl);
+        var host = builder.Build();
+        host.StartAsync().GetAwaiter().GetResult();
 
-        var router = app.Services.GetRequiredService<CommandRouter>();
-        router.DashboardUrl = dashboardUrl;
+        var router = host.Services.GetRequiredService<CommandRouter>();
 
         var wpf = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         wpf.DispatcherUnhandledException += (_, e) =>
@@ -137,7 +133,7 @@ public static class Program
         };
         System.Windows.Forms.Application.EnableVisualStyles();
 
-        var shell = new Shell(engine, catalog, store, paths, clock, dashboardUrl, recovered);
+        var shell = new Shell(engine, catalog, store, paths, clock, dashboard, recovered);
         wpf.SessionEnding += (_, _) => shell.OnWindowsShutdown();
         wpf.Startup += (_, _) =>
         {
@@ -151,7 +147,8 @@ public static class Program
         engine.StopSession(EndReason.AppExit);
         shell.Dispose();
         catalog.Dispose();
-        app.StopAsync(TimeSpan.FromSeconds(5)).GetAwaiter().GetResult();
+        dashboard.Dispose();
+        host.StopAsync(TimeSpan.FromSeconds(5)).GetAwaiter().GetResult();
         return code;
     }
 

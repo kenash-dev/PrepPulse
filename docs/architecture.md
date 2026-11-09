@@ -357,6 +357,20 @@ In the code:
 - [`tests/testrun/settings.json:3-14`](../tests/testrun/settings.json#L3-L14): 30 s idle, 30 s distraction, 90 s no input, 1 min break.
 - [`build.cmd:13-15`](../build.cmd#L13-L15): `--exit` sent to the test instance before building.
 
+### D16. Stay light in the background (v0.2)
+Measured on the installed v0.1 after 3.7 hours idle: 103 MB private memory, 0% CPU, a 34 MB install folder, and log files that were never deleted. What changed:
+
+- **The dashboard's web server starts only when you open the dashboard**, and stops after `DashboardIdleMinutes` (default 10) without a request. The background services now run on a plain Generic Host, so Kestrel and routing aren't running most of the day. This supersedes the "Kestrel in the composition root" part of P1.
+  [`DashboardServer.cs`](../src/PrepPulse.App/Services/DashboardServer.cs), [`Program.cs`](../src/PrepPulse.App/Program.cs).
+- **Idle-aware sampling.** Once you're idle past the idle threshold, the sampler checks every 5 seconds instead of every second. Any input brings back 1-second sampling, and idle pauses are still dated from your last input.
+  [`Housekeeping.ShouldSample`](../src/PrepPulse.Core/Housekeeping.cs), [`SamplerService.cs`](../src/PrepPulse.App/Services/SamplerService.cs).
+- **Log retention.** Daily logs older than 30 days are deleted at startup. Only files named `preppulse-yyyyMMdd.log` are ever touched. [`Housekeeping.ExpiredLogs`](../src/PrepPulse.Core/Housekeeping.cs).
+- **The session window is closed when a session ends**, not hidden, so nothing stays in memory between sessions. [`Shell.cs`](../src/PrepPulse.App/Ui/Shell.cs).
+- **Smaller GC footprint:** no background GC thread, and `System.GC.ConserveMemory=5`. [`PrepPulse.App.csproj`](../src/PrepPulse.App/PrepPulse.App.csproj).
+- **The install is Windows x64 only and pre-compiled (ReadyToRun).** It no longer ships SQLite for Linux and macOS, and the program folder is emptied before each install. [`install.cmd`](../install.cmd).
+
+Not done: replacing the WinForms tray icon with direct Win32 calls, which would remove WinForms from the process. That's a bigger change, kept separate.
+
 ---
 
 ## 4. Where it differs from the design

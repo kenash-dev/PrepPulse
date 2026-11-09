@@ -13,14 +13,17 @@ namespace PrepPulse.App.Services;
 
 /// <summary>
 /// Once a second, while a session runs: read the foreground window, the browser domain and the idle time, and feed
-/// the engine. Every 30 seconds also list the programs with open windows.
+/// the engine. Every 30 seconds also list the programs with open windows. Once you've been idle past the idle
+/// threshold it samples every 5 seconds instead (<see cref="Housekeeping.ShouldSample"/>); any input brings it back.
 /// </summary>
-public sealed class SamplerService(FocusEngine engine, IClock clock, WindowProbe windows, BrowserAddressProbe browser, ILogger<SamplerService> log)
+public sealed class SamplerService(FocusEngine engine, IClock clock, WindowProbe windows, BrowserAddressProbe browser,
+    CatalogService catalog, ILogger<SamplerService> log)
     : BackgroundService
 {
     private static readonly TimeSpan AppsEvery = TimeSpan.FromSeconds(30);
     private DateTimeOffset _lastApps = DateTimeOffset.MinValue;
     private long? _appsSession;
+    private DateTimeOffset _lastSample = DateTimeOffset.MinValue;
     private int _failures;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -54,6 +57,11 @@ public sealed class SamplerService(FocusEngine engine, IClock clock, WindowProbe
         }
 
         var now = clock.Now;
+        var idle = Native.IdleFor();
+        var idleAfter = TimeSpan.FromMinutes(catalog.Settings.IdleAfterMinutes);
+        if (!Housekeeping.ShouldSample(idle, now - _lastSample, idleAfter)) return;
+        _lastSample = now;
+
         var fg = windows.Foreground();
         Observation? obs = null;
         var own = false;
@@ -69,7 +77,7 @@ public sealed class SamplerService(FocusEngine engine, IClock clock, WindowProbe
             }
         }
 
-        engine.Tick(new Sample(now, obs, Native.IdleFor(), own));
+        engine.Tick(new Sample(now, obs, idle, own));
 
         if (snap.SessionId != _appsSession || now - _lastApps >= AppsEvery)
         {
